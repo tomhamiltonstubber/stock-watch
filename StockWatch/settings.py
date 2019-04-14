@@ -3,11 +3,10 @@ import os
 DJ_DIR = os.path.dirname(__file__)
 BASE_DIR = os.path.dirname(DJ_DIR)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'swx6yr#ed46)sc$-nnfcpe_czv03#tv3*#0li)ka!9@(83y^6u'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', True)
+LIVE = os.getenv('LIVE')
 
 ALLOWED_HOSTS = []
 
@@ -24,6 +23,9 @@ INSTALLED_APPS = [
 
     'django_jinja',
     'django_extensions',
+    'bootstrap3_datetime',
+    'debug_toolbar',
+    'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE = [
@@ -34,11 +36,22 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'StockWatch.urls'
 
 TEMPLATES = [
+    {
+        "BACKEND": "django_jinja.backend.Jinja2",
+        "APP_DIRS": True,
+        'DIRS': ['templates'],
+        "OPTIONS": {
+            "match_extension": ".jinja",
+        }
+    },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -52,28 +65,33 @@ TEMPLATES = [
             ],
         },
     },
-    {
-        "BACKEND": "django_jinja.backend.Jinja2",
-        "APP_DIRS": True,
-        'DIRS': ['templates'],
-        "OPTIONS": {
-            "match_extension": ".jinja",
-        }
-    },
 ]
 
 WSGI_APPLICATION = 'StockWatch.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+# TODO
+# if LIVE:
+    # RAVEN_CONFIG = {
+    #     'dsn': 'https://e9dedecf18764f1392e959d1badcfa38:5a57928068164499befd72e7bfb78492@sentry.io/1277127',
+    #     'release': os.getenv('HEROKU_SLUG_COMMIT', '-'),
+    # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+if LIVE:
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.config()}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'salsaverde',
+            'USER': os.getenv('PGUSER', 'postgres'),
+            'PASSWORD': os.getenv('PGPASSWORD', 'waffle'),
+            'HOST': os.getenv('PGHOST', 'localhost'),
+            'PORT': os.getenv('PGPORT', '5432'),
+        }
     }
-}
 
 
 # Password validation
