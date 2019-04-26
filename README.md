@@ -4,9 +4,10 @@
 
 * Login
 * Main page - filter and then results display
-* Company details page (possibly)
-* Export results option
-* Import company names option
+* Export results option <-- CSV file is good
+* DF - Dividends view for stocks. **Need details from Sorcha**
+* DF - API
+* DF - Questions
 
 ## Models
 
@@ -14,11 +15,9 @@
 * StockRecord
 * User
 * Firm
-
-## Scheduler
-
-* At midnight, check for new companies
-* At midnight, get data for previous day for all companies
+* Document
+* History??
+* Actions??
 
 ## Misc
 
@@ -26,3 +25,13 @@
 * With database
 * Sentry
 * Papertrail
+
+## Markets
+
+All with Alpha Vantage <-- seems to be very good and have everything
+
+## Complications
+
+ * Share classes
+ * History tracking
+ * DF White labelling
