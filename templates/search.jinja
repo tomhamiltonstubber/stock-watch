@@ -1,0 +1,39 @@
+{% extends 'base.jinja' %}
+
+{% block content %}
+  <div class="row">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="search-form">
+        {{ form|bootstrap }}
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <td>Company</td>
+        <td>Date</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Quarter</td>
+        <td>Amount</td>
+        <td>Gross Value</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sd in stock_datas %}
+        <tr>
+          <td>{{ sd.company }}</td>
+          <td>{{ sd.date }}</td>
+          <td>{{ sd.high }}</td>
+          <td>{{ sd.low }}</td>
+          <td>{{ sd.quarter }}</td>
+          <td>{{ sd.quantity }}</td>
+          <td>{{ sd.gross_value }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

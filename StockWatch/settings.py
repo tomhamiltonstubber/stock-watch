@@ -3,7 +3,7 @@ import os
 DJ_DIR = os.path.dirname(__file__)
 BASE_DIR = os.path.dirname(DJ_DIR)
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', '4d2a5e6514c95192aacab316ef5c0706')
 
 DEBUG = os.getenv('DEBUG', True)
 LIVE = os.getenv('LIVE')
@@ -12,7 +12,7 @@ ALLOWED_HOSTS = []
 
 VANTAGE_API_KEY = os.getenv('VANTAGE_API_KEY')
 
-# Application definition
+AUTH_USER_MODEL = 'main.User'
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -24,8 +24,11 @@ INSTALLED_APPS = [
     'django_jinja',
     'django_extensions',
     'bootstrap3_datetime',
+    'bootstrapform_jinja',
     'debug_toolbar',
     'raven.contrib.django.raven_compat',
+
+    'StockWatch.main',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +88,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'salsaverde',
+            'NAME': 'stockwatch',
             'USER': os.getenv('PGUSER', 'postgres'),
             'PASSWORD': os.getenv('PGPASSWORD', 'waffle'),
             'HOST': os.getenv('PGHOST', 'localhost'),
