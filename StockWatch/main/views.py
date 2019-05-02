@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.views.generic import FormView
 
 from StockWatch.main.models import StockData, Company
+from StockWatch.main.widgets import DatePicker
 
 session = requests.Session()
 
@@ -29,10 +30,14 @@ def search_company_symbols(request):
 
 
 class StockDetailsForm(forms.Form):
-    date = forms.DateField(label='Enter a date')
-    symbol = forms.CharField(label='Search for a company symbol')
+    symbol = forms.CharField(label='')
+    date = forms.DateField(label='')
+    quantity = forms.IntegerField(label='', min_value=1)
     name = forms.CharField(widget=forms.HiddenInput, required=False)
-    quantity = forms.IntegerField(label='Quantity of stocks', min_value=1)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date'].widget = DatePicker(self.fields['date'])
 
 
 class StockDetails(FormView):

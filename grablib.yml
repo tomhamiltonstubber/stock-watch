@@ -1,0 +1,33 @@
+download_root: static/libs
+download:
+  'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.css': 'css/bootstrap.css'
+  'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.js': 'js/bootstrap.js'
+
+  'CDNJS/font-awesome/4.7.0/css/font-awesome.min.css': 'css/font-awesome.css'
+  'CDNJS/font-awesome/4.7.0/fonts/fontawesome-webfont.woff': 'fonts/fontawesome-webfont.woff'
+  'CDNJS/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2': 'fonts/fontawesome-webfont.woff2'
+
+  'CDNJS/jquery/3.3.1/jquery.min.js': 'js/jquery.js'
+
+  'GITHUB/Eonasdan/bootstrap-datetimepicker/4.17.47/build/js/bootstrap-datetimepicker.min.js': 'js/dt-picker.js'
+  'GITHUB/Eonasdan/bootstrap-datetimepicker/4.17.47/build/css/bootstrap-datetimepicker.css': 'css/dt-picker.css'
+
+  'GITHUB/moment/moment/2.13.0/min/moment.min.js': 'js/moment.js'
+
+build_root: static/
+debug: true
+build:
+  wipe: '^css/.*'
+  cat:
+    'js/libraries.js':
+      - 'DL/js/moment.js'
+      - 'DL/js/jquery.js'
+      - 'DL/js/bootstrap.js'
+      - 'DL/js/dt-picker.js'
+  sass:
+    css:
+      src: 'static/scss'
+      replace:
+        'libraries\.scss$':
+          '(select2(?:\.png|x2\.png|-spinner\.gif))': '/static/css/\1'
+          '../images/': '/static/libs/images/'
