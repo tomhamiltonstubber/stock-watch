@@ -7,6 +7,7 @@ from grablib import Grab, setup_logging
 
 STATIC_DIR = os.path.join(settings.BASE_DIR, 'static')
 SCSS_DIR = os.path.join(STATIC_DIR, 'scss')
+JS_DIR = os.path.join(STATIC_DIR, 'js')
 CSS_DIR = os.path.join(STATIC_DIR, 'css')
 
 
@@ -18,6 +19,7 @@ class Command(BaseCommand):
         self.verbosity = kwargs['verbosity']
 
         self._log('\nwatching %s\n\n' % SCSS_DIR, level=0)
+        self._log('\nwatching %s\n\n' % JS_DIR, level=0)
 
         self._build()
 
@@ -27,10 +29,11 @@ class Command(BaseCommand):
 
         mask = pyinotify.IN_CLOSE_WRITE | pyinotify.IN_MODIFY | pyinotify.IN_MOVED_TO
         wm.add_watch(SCSS_DIR, mask, rec=True, auto_add=True)
+        # wm.add_watch(JS_DIR, mask, rec=True, auto_add=True)
         notifier.loop()
 
     def _handle_event(self, event):
-        if not re.match('.*\.s?css$', event.name):
+        if not re.match(r'.*\.(s?css|js)$', event.name):
             return
         self._build()
 

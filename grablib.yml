@@ -9,6 +9,9 @@ download:
 
   'CDNJS/jquery/3.3.1/jquery.min.js': 'js/jquery.js'
 
+  'CDNJS/corejs-typeahead/1.2.1/bloodhound.js': 'js/bloodhound.js'
+  'CDNJS/corejs-typeahead/1.2.1/typeahead.bundle.js': 'js/typeahead.js'
+
   'GITHUB/Eonasdan/bootstrap-datetimepicker/4.17.47/build/js/bootstrap-datetimepicker.min.js': 'js/dt-picker.js'
   'GITHUB/Eonasdan/bootstrap-datetimepicker/4.17.47/build/css/bootstrap-datetimepicker.css': 'css/dt-picker.css'
 
@@ -24,10 +27,15 @@ build:
       - 'DL/js/jquery.js'
       - 'DL/js/bootstrap.js'
       - 'DL/js/dt-picker.js'
+      - 'DL/js/bloodhound.js'
+      - 'DL/js/typeahead.js'
+    'scss/libraries.scss':
+      - 'DL/css/bootstrap.css'
+      - 'DL/css/dt-picker.css'
+      - 'DL/css/font-awesome.css'
   sass:
     css:
       src: 'static/scss'
       replace:
         'libraries\.scss$':
-          '(select2(?:\.png|x2\.png|-spinner\.gif))': '/static/css/\1'
           '../images/': '/static/libs/images/'
