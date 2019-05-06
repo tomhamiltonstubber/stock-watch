@@ -19,7 +19,7 @@ class Command(BaseCommand):
         self.verbosity = kwargs['verbosity']
 
         self._log('\nwatching %s\n\n' % SCSS_DIR, level=0)
-        self._log('\nwatching %s\n\n' % JS_DIR, level=0)
+        # self._log('\nwatching %s\n\n' % JS_DIR, level=0)
 
         self._build()
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         notifier.loop()
 
     def _handle_event(self, event):
-        if not re.match(r'.*\.(s?css|js)$', event.name):
+        if not re.match(r'.*\.(s?css)$', event.name):
             return
         self._build()
 

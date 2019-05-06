@@ -5,4 +5,114 @@ body {
   height: 100px;
   background: lightblue; }
 
+.search-bar {
+  margin: 0 auto;
+  white-space: nowrap;
+  position: relative;
+  padding-top: 30px; }
+  .search-bar #search-form {
+    text-align: center; }
+    .search-bar #search-form .fa-search {
+      position: absolute;
+      margin-left: 14px;
+      margin-top: 15px;
+      z-index: 1;
+      color: #aaa; }
+      @media (max-width: 768px) {
+        .search-bar #search-form .fa-search {
+          margin-left: 14px;
+          margin-top: 15px; } }
+    .search-bar #search-form #id_symbol_search {
+      width: calc(100% - 45px);
+      height: 45px;
+      font-size: 1rem;
+      color: #444;
+      background: white !important;
+      padding-left: 45px;
+      border: 1px solid #ddd; }
+      @media (max-width: 768px) {
+        .search-bar #search-form #id_symbol_search {
+          font-size: 0.8rem; } }
+      .search-bar #search-form #id_symbol_search::placeholder {
+        color: #aaa;
+        content: 'Search...'; }
+  .search-bar.article {
+    background: none;
+    padding-bottom: 40px;
+    padding-top: 0; }
+
+.twitter-typeahead {
+  width: calc(100% - 45px);
+  display: inline-block; }
+
+.tt-menu {
+  text-align: left;
+  background-color: white;
+  color: #444;
+  border: 2px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  width: calc(100% - 2px); }
+
+.tt-suggestion {
+  text-align: left;
+  cursor: pointer;
+  padding: 7px 20px;
+  border-top: 1px solid #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px; }
+  @media (max-width: 768px) {
+    .tt-suggestion {
+      padding: 7px 10px;
+      font-size: 13px; } }
+  .tt-suggestion.tt-cursor, .tt-suggestion:hover {
+    color: #fff;
+    background-color: lightblue; }
+  .tt-suggestion:first-child {
+    border-top: None; }
+  .tt-suggestion .small {
+    color: #aaa; }
+
+#no-results {
+  padding: 7px 20px;
+  font-size: 16px;
+  width: 795px; }
+
+.tt-hint {
+  display: none; }
+
+.tag {
+  background-color: lightblue;
+  display: inline-block;
+  padding: .25em .4em;
+  font-size: 73%;
+  font-weight: bold;
+  color: white;
+  border-radius: .25rem; }
+  @media (max-width: 768px) {
+    .tag {
+      display: none; } }
+
+#spinner {
+  display: none;
+  position: relative;
+  top: -20px;
+  left: calc(100% - 30px);
+  width: 20px;
+  height: 6px;
+  transform-origin: center center;
+  will-change: transform;
+  animation: rotation 3s infinite ease; }
+  #spinner > div {
+    width: 6px;
+    height: 6px;
+    margin: 0 2px;
+    background-color: lightblue;
+    border-radius: 50%;
+    border: 0;
+    display: inline-block;
+    vertical-align: top; }
+
 /*# sourceMappingURL=styles.css.map */

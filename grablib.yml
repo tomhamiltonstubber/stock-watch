@@ -5,6 +5,7 @@ download:
 
   'CDNJS/font-awesome/4.7.0/css/font-awesome.min.css': 'css/font-awesome.css'
   'CDNJS/font-awesome/4.7.0/fonts/fontawesome-webfont.woff': 'fonts/fontawesome-webfont.woff'
+  'CDNJS/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf': 'fonts/fontawesome-webfont.ttf'
   'CDNJS/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2': 'fonts/fontawesome-webfont.woff2'
 
   'CDNJS/jquery/3.3.1/jquery.min.js': 'js/jquery.js'
@@ -39,3 +40,4 @@ build:
       replace:
         'libraries\.scss$':
           '../images/': '/static/libs/images/'
+          '../fonts/': '/static/libs/fonts/'

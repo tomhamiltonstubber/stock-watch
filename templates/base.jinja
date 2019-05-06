@@ -22,10 +22,6 @@
   <footer>
     <form id="post-form" method="POST">{% csrf_token %}</form>
   </footer>
-  {% block pre_extra_js %}
-{#    <script src="{{ static('/js/typeahead.js') }}"></script>#}
-{#    <script src="{{ static('/js/bloodhound.js') }}"></script>#}
-  {% endblock %}
   <script src="{{ static('js/libraries.js') }}"></script>
   <script src="{{ static('js/main.js') }}"></script>
 </html>

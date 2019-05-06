@@ -32,7 +32,8 @@ $(document).ready(() => {
 
   const EMPTY = `<p id="no-results">No results found.</p>`
   const $spinner = $('#spinner')
-  const $search = $('#id_symbol')
+  const $search = $('#id_symbol_search')
+  const $symbol = $('#id_symbol')
   $search.typeahead({
       minLength: 2
     },
@@ -47,15 +48,17 @@ $(document).ready(() => {
         <span class="tag">${v.symbol}</span>
         <b>${v.name}</b>
       </div>
+      <small>
+        ${v.region} (${v.currency})
+      </small>
     </div>`
       }
     }).on('typeahead:selected', (ev, suggestion) => {
-      console.log('Selected company', suggestion)
-      $search.val(suggestion.symbol)
+      $symbol.val(suggestion.symbol)
   }).on('typeahead:asyncrequest', () => {
     $spinner.show()
   }).on('typeahead:asynccancel typeahead:asyncreceive', () => $spinner.hide())
 
   // For testing
-  $(document).on('typeahead:beforeclose', (event) => event.preventDefault())
+  // $(document).on('typeahead:beforeclose', (event) => event.preventDefault())
 })

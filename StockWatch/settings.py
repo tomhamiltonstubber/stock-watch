@@ -10,7 +10,7 @@ LIVE = os.getenv('LIVE')
 
 ALLOWED_HOSTS = []
 
-VANTAGE_API_KEY = os.getenv('VANTAGE_API_KEY')
+VANTAGE_API_KEY = os.getenv('VANTAGE_API_KEY', '73KB3IKLT977N1M6')
 
 AUTH_USER_MODEL = 'main.User'
 

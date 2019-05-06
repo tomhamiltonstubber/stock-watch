@@ -2,7 +2,140 @@ body {
   margin: 0;
 }
 
+$primary-color: lightblue;
+
 .header {
   height: 100px;
   background: lightblue;
+}
+
+$small: 768px;
+$help-topic-color: $primary-color;
+
+.search-bar {
+  margin: 0 auto;
+  white-space: nowrap;
+  position: relative;
+  padding-top: 30px;
+  #search-form {
+    text-align: center;
+    .fa-search {
+      position: absolute;
+      margin-left: 14px;
+      margin-top: 15px;
+      z-index: 1;
+      color: #aaa;
+      @media (max-width: $small) {
+        margin-left: 14px;
+        margin-top: 15px;
+      }
+    }
+    #id_symbol_search {
+      width: calc(100% - 45px);
+      height: 45px;
+      font-size: 1rem;
+      @media (max-width: $small) {
+        font-size: 0.8rem;
+      }
+      color: #444;
+      background: white !important;
+      padding-left: 45px;
+      border: 1px solid #ddd;
+      &::placeholder {
+        color: #aaa;
+        content: 'Search...';
+      }
+    }
+  }
+  &.article {
+    background: none;
+    padding-bottom: 40px;
+    padding-top: 0;
+  }
+}
+
+.twitter-typeahead {
+  width: calc(100% - 45px);
+  display: inline-block;
+}
+
+.tt-menu {
+  text-align: left;
+  background-color: white;
+  color: #444;
+  border: 2px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  width: calc(100% - 2px);
+}
+
+.tt-suggestion {
+  text-align: left;
+  cursor: pointer;
+  padding: 7px 20px;
+  border-top: 1px solid #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @media (max-width: $small) {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+  &.tt-cursor, &:hover {
+    color: #fff;
+    background-color: $help-topic-color;
+  }
+  font-size: 16px;
+  &:first-child {
+    border-top: None
+  }
+  .small {
+    color: #aaa;
+  }
+}
+
+#no-results {
+  padding: 7px 20px;
+  font-size: 16px;
+  width: 795px;
+}
+
+.tt-hint {
+  display: none;
+}
+
+.tag {
+  background-color: $help-topic-color;
+  display: inline-block;
+  padding: .25em .4em;
+  font-size: 73%;
+  font-weight: bold;
+  color: white;
+  border-radius: .25rem;
+  @media (max-width: $small) {
+    display: none;
+  }
+}
+
+#spinner {
+  display: none;
+  position: relative;
+  top: -20px;
+  left: calc(100% - 30px);
+  $size: 6px;
+  width: ($size + $size / 3 * 2) * 2;
+  height: $size;
+  > div {
+    width: $size;
+    height: $size;
+    margin: 0 $size / 3;
+    background-color: $help-topic-color;
+    border-radius: 50%;
+    border: 0;
+    display: inline-block;
+    vertical-align: top;
+  }
+  transform-origin: center center;
+  will-change: transform;
+  animation: rotation 3s infinite ease;
 }
