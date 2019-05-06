@@ -1,0 +1,49 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+      - image: circleci/postgres:9.6-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: testing
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v2-py-requirements-{{ checksum "requirements.txt" }}
+          - grablib-files-{{ checksum "grablib.yml" }}
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            grablib
+            ./manage.py collectstatic --noinput --verbosity 0
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      - save_cache:
+          key: grablib-files-{{ checksum "grablib.yml" }}
+          paths:
+          - /salsa-verde/StockWatch/static/libs/
+
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            pytest StockWatch/main/tests.py --tb=native --cov=StockWatch
+            flake8 StockWatch
+            codecov --token=b62f2c75-fc41-4503-98ee-6a66d731f1e0 -e=.coveragec
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports

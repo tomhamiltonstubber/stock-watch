@@ -3,7 +3,6 @@ from decimal import Decimal
 
 import pytest
 import responses
-from django.test import Client
 from django.urls import reverse
 
 from StockWatch.main.models import StockData, Company

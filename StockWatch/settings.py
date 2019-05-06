@@ -1,5 +1,7 @@
 import os
 
+from sentry_sdk.integrations.django import DjangoIntegration
+
 DJ_DIR = os.path.dirname(__file__)
 BASE_DIR = os.path.dirname(DJ_DIR)
 
@@ -26,7 +28,6 @@ INSTALLED_APPS = [
     'bootstrap3_datetime',
     'bootstrapform_jinja',
     'debug_toolbar',
-    'raven.contrib.django.raven_compat',
 
     'StockWatch.main',
 ]
@@ -73,12 +74,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'StockWatch.wsgi.application'
 
 
-# TODO
-# if LIVE:
-    # RAVEN_CONFIG = {
-    #     'dsn': 'https://e9dedecf18764f1392e959d1badcfa38:5a57928068164499befd72e7bfb78492@sentry.io/1277127',
-    #     'release': os.getenv('HEROKU_SLUG_COMMIT', '-'),
-    # }
+if LIVE:
+    import sentry_sdk
+    sentry_sdk.init(
+        dsn="https://3b1874b64f8040a089e11e5c1133ae05@sentry.io/1453420",
+        integrations=[DjangoIntegration()]
+    )
 
 
 if LIVE:
