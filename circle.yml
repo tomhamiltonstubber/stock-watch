@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/python:3.7.3
       - image: circleci/postgres:9.6-alpine
         environment:
           POSTGRES_USER: postgres
@@ -35,7 +35,7 @@ jobs:
       - save_cache:
           key: grablib-files-{{ checksum "grablib.yml" }}
           paths:
-          - /salsa-verde/StockWatch/static/libs/
+          - /stock-watch/StockWatch/static/libs/
 
       - run:
           name: run tests
