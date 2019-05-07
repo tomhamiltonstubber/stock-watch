@@ -18,6 +18,7 @@ $(document).ready(() => {
       icons: icons,
       format: $input.data('format'),
       date: $init.val(),
+      maxDate: 'now',
     })
   })
 

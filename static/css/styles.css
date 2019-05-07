@@ -42,7 +42,7 @@ body {
     padding-top: 0; }
 
 .twitter-typeahead {
-  width: calc(100% - 45px);
+  width: 100%;
   display: inline-block; }
 
 .tt-menu {
@@ -53,6 +53,9 @@ body {
   border-top: none;
   border-radius: 0 0 5px 5px;
   width: calc(100% - 2px); }
+
+.tt-input {
+  width: 100% !important; }
 
 .tt-suggestion {
   text-align: left;

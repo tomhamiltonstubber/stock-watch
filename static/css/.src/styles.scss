@@ -55,7 +55,7 @@ $help-topic-color: $primary-color;
 }
 
 .twitter-typeahead {
-  width: calc(100% - 45px);
+  width: 100%;
   display: inline-block;
 }
 
@@ -67,6 +67,10 @@ $help-topic-color: $primary-color;
   border-top: none;
   border-radius: 0 0 5px 5px;
   width: calc(100% - 2px);
+}
+
+.tt-input {
+  width: 100% !important;
 }
 
 .tt-suggestion {
