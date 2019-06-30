@@ -96,9 +96,5 @@ class StockDetails(FormView):
                                  quarter=quarter, quantity=cd['quantity'], gross_value=gross_value)
         return redirect(reverse('search'))
 
-    def form_invalid(self, form):
-        debug(form.errors)
-        return super().form_invalid(form)
-
 
 search = StockDetails.as_view()

@@ -41,8 +41,8 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest StockWatch/main/tests.py --tb=native --cov=StockWatch
-            flake8 StockWatch
+            pytest StockWatch/ --tb=native --cov=StockWatch
+            flake8 StockWatch/
             codecov --token=b62f2c75-fc41-4503-98ee-6a66d731f1e0 -e=.coveragec
       - store_artifacts:
           path: test-reports
