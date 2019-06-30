@@ -43,6 +43,8 @@ MIDDLEWARE = [
 
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'StockWatch.main.middleware.AuthRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'StockWatch.urls'

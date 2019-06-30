@@ -118,4 +118,18 @@ body {
     display: inline-block;
     vertical-align: top; }
 
+#login-block {
+  margin-top: 100px;
+  width: 100%; }
+  #login-block > div {
+    width: 30%;
+    background-color: lightblue;
+    margin: 0 auto;
+    padding: 20px 0 40px 0;
+    border: 1px solid #007bff;
+    border-radius: 4px; }
+    #login-block > div #login-form {
+      display: inline-grid;
+      width: 50%; }
+
 /*# sourceMappingURL=styles.css.map */

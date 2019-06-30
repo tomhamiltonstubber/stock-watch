@@ -6,7 +6,7 @@ $primary-color: lightblue;
 
 .header {
   height: 100px;
-  background: lightblue;
+  background: $primary-color;
 }
 
 $small: 768px;
@@ -143,3 +143,21 @@ $help-topic-color: $primary-color;
   will-change: transform;
   animation: rotation 3s infinite ease;
 }
+
+#login-block {
+  margin-top: 100px;
+  width: 100%;
+  > div {
+    width: 30%;
+    background-color: $primary-color;
+    margin: 0 auto;
+    padding: 20px 0 40px 0;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    #login-form {
+      display: inline-grid;
+      width: 50%;
+    }
+  }
+}
+

@@ -5,7 +5,7 @@ import pytest
 import responses
 from django.urls import reverse
 
-from StockWatch.main.models import StockData, Company
+from StockWatch.main.models import StockData, Company, User, Firm
 from StockWatch.main.views import VantageRequestError
 
 
@@ -101,10 +101,45 @@ def timeseries_example():
     }
 
 
+@pytest.fixture()
+def auth_client(client):
+    user = User.objects.create_user(first_name='Tom', last_name='Owner',
+                                    email='testing@stockwatch.com', password='testing',
+                                    firm=Firm.objects.create(name='123 Firm Ltd'))
+    logged_in = client.login(username=user.email, password='testing')
+    assert logged_in, 'Not logged in'
+    return client
+
+
+def assert_redirects(r, url):
+    assert hasattr(r, 'redirect_chain'), 'Response was not a redirect. Did you use follow=True?'
+    response_url, _ = r.redirect_chain[0]
+    assert response_url == url, 'Response redirected to wrong page: ' + response_url
+
+
+@pytest.mark.django_db
+def test_redirect_not_authed(client):
+    User.objects.create_user(first_name='Tom', last_name='Owner',
+                             email='testing@stockwatch.com', password='testing',
+                             firm=Firm.objects.create(name='123 Firm Ltd'))
+    r = client.get('/', follow=True)
+    assert_redirects(r, '/login/')
+
+
+@pytest.mark.django_db
+def test_login(client):
+    User.objects.create_user(first_name='Tom', last_name='Owner',
+                             email='testing@stockwatch.com', password='testing',
+                             firm=Firm.objects.create(name='123 Firm Ltd'))
+    r = client.post('/login/', {'username': 'testing@stockwatch.com', 'password': 'testing'}, follow=True)
+    assert_redirects(r, '/')
+
+
+@pytest.mark.django_db
 @responses.activate
-def test_search_symbols_ordered(client, symbol_search_example):
+def test_search_symbols_ordered(auth_client, symbol_search_example):
     responses.add('GET', 'https://www.alphavantage.co/query', json=symbol_search_example)
-    r = client.get(reverse('symbol-search'), {'q': 'auto trader'})
+    r = auth_client.get(reverse('symbol-search'), {'q': 'auto trader'})
     assert r.json() == [
         {
             'symbol': 'AUTO.LON',
@@ -121,28 +156,30 @@ def test_search_symbols_ordered(client, symbol_search_example):
     ]
 
 
+@pytest.mark.django_db
 @responses.activate
-def test_search_symbol_vantage_error(client):
+def test_search_symbol_vantage_error(auth_client):
     responses.add('GET', 'https://www.alphavantage.co/query', json={'Error Message': 'Foo'})
     with pytest.raises(VantageRequestError):
-        client.get(reverse('symbol-search'), {'q': 'auto trader'})
-
-
-@responses.activate
-def test_search_symbol_bad_response(client):
-    responses.add('GET', 'https://www.alphavantage.co/query', body='There was an error', status=500)
-    with pytest.raises(VantageRequestError):
-        client.get(reverse('symbol-search'), {'q': 'auto trader'})
+        auth_client.get(reverse('symbol-search'), {'q': 'auto trader'})
 
 
 @pytest.mark.django_db
 @responses.activate
-def test_timeseries_options(client, timeseries_example):
+def test_search_symbol_bad_response(auth_client):
+    responses.add('GET', 'https://www.alphavantage.co/query', body='There was an error', status=500)
+    with pytest.raises(VantageRequestError):
+        auth_client.get(reverse('symbol-search'), {'q': 'auto trader'})
+
+
+@pytest.mark.django_db
+@responses.activate
+def test_timeseries_options(auth_client, timeseries_example):
     responses.add('GET', 'https://www.alphavantage.co/query', json=timeseries_example)
     url = reverse('search')
-    r = client.get(url)
+    r = auth_client.get(url)
     assert r.status_code == 200
-    r = client.post(url, data={
+    r = auth_client.post(url, data={
         'date': datetime.date(2019, 4, 30).strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
@@ -153,18 +190,18 @@ def test_timeseries_options(client, timeseries_example):
     assert sd.high == Decimal('130.7000')
     assert sd.date == datetime.date(2019, 4, 30)
     assert sd.company == Company.objects.get(name='Auto Trader London Office')
-    r = client.get(url)
+    r = auth_client.get(url)
     assert sd.company.name in r.content.decode()
 
 
 @pytest.mark.django_db
 @responses.activate
-def test_timeseries_weekend(client, timeseries_example):
+def test_timeseries_weekend(auth_client, timeseries_example):
     responses.add('GET', 'https://www.alphavantage.co/query', json=timeseries_example)
     url = reverse('search')
-    r = client.get(url)
+    r = auth_client.get(url)
     assert r.status_code == 200
-    r = client.post(url, data={
+    r = auth_client.post(url, data={
         'date': datetime.date(2019, 4, 28).strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
@@ -175,18 +212,18 @@ def test_timeseries_weekend(client, timeseries_example):
     assert sd.high == Decimal('130.5152')
     assert sd.date == datetime.date(2019, 4, 28)
     assert sd.company == Company.objects.get(name='Auto Trader London Office')
-    r = client.get(url)
+    r = auth_client.get(url)
     assert sd.company.name in r.content.decode()
 
 
 @pytest.mark.django_db
 @responses.activate
-def test_timeseries_out_of_range(client, timeseries_example):
+def test_timeseries_out_of_range(auth_client, timeseries_example):
     responses.add('GET', 'https://www.alphavantage.co/query', json=timeseries_example)
     url = reverse('search')
-    r = client.get(url)
+    r = auth_client.get(url)
     assert r.status_code == 200
-    r = client.post(url, data={
+    r = auth_client.post(url, data={
         'date': datetime.date(2019, 4, 24).strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
@@ -198,16 +235,19 @@ def test_timeseries_out_of_range(client, timeseries_example):
 
 
 @pytest.mark.django_db
-def test_real_vantage_time_series(client):
+@responses.activate
+def test_real_vantage_time_series(auth_client):
     data = {
         'date': datetime.date.today().strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
     }
-    r = client.post(reverse('search'), data=data)
+    r = auth_client.post(reverse('search'), data=data)
     assert r.status_code == 302
 
 
-def test_real_vantage_symbol_search(client):
-    r = client.get(reverse('symbol-search'), {'q': 'microsoft'})
+@pytest.mark.django_db
+@responses.activate
+def test_real_vantage_symbol_search(auth_client):
+    r = auth_client.get(reverse('symbol-search'), {'q': 'microsoft'})
     assert r.status_code == 200

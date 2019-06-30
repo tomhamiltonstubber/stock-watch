@@ -1,0 +1,18 @@
+{% extends 'base.jinja' %}
+
+{% block body_content %}
+  <div class="row">
+    <div id="login-block" class="text-center">
+      <div>
+        <h2>Login</h2>
+        <form method="post">
+          {% csrf_token %}
+          <div id="login-form">
+            {{ form|bootstrap }}
+            <button class="btn btn-primary" type="submit">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

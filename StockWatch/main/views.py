@@ -3,16 +3,44 @@ from datetime import timedelta
 
 import requests
 from django.conf import settings
+from django.contrib.auth import user_logged_in
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView
+
 from django import forms
+from django.dispatch import receiver
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import FormView
 
 from StockWatch.main.models import StockData, Company
 from StockWatch.main.widgets import DatePicker
 
 session = requests.Session()
+
+
+class Login(LoginView):
+    title = 'Login'
+    template_name = 'login.jinja'
+    form_class = AuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_redirect_url(self):
+        return reverse('search')
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(title=self.title, **kwargs)
+
+
+login = Login.as_view()
+
+
+@receiver(user_logged_in)
+def update_user_history(sender, user, **kwargs):
+    user.last_logged_in = timezone.now()
+    user.save(update_fields=['last_logged_in'])
 
 
 class VantageRequestError(Exception):
@@ -50,7 +78,7 @@ def search_company_symbols(request):
     return JsonResponse(data, safe=False)
 
 
-class StockDetailsForm(forms.Form):
+class SearchStockForm(forms.Form):
     symbol = forms.CharField(widget=forms.HiddenInput)
     date = forms.DateField(label='')
     quantity = forms.IntegerField(label='', min_value=1)
@@ -61,9 +89,9 @@ class StockDetailsForm(forms.Form):
         self.fields['date'].widget = DatePicker(self.fields['date'])
 
 
-class StockDetails(FormView):
+class Search(FormView):
     template_name = 'search.jinja'
-    form_class = StockDetailsForm
+    form_class = SearchStockForm
     title = 'Search for stock prices'
 
     def get_context_data(self, **kwargs):
@@ -97,4 +125,4 @@ class StockDetails(FormView):
         return redirect(reverse('search'))
 
 
-search = StockDetails.as_view()
+search = Search.as_view()
