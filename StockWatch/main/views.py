@@ -25,10 +25,12 @@ def vantage_request(params: dict):
     if r.status_code != 200:
         raise VantageRequestError('Problem accessing URL', r.content.decode())
     data = r.json()
+    if data.get('note'):
+        raise VantageRequestError("We've used up all our API calls. Try again in a few minutes.")
     errors = data.get('Error Message')
     if errors:
         raise VantageRequestError('Error accessing Vantage (%s): %r' % (r.url, errors))
-    return r.json()
+    return data
 
 
 REGION_ORDER = {'United Kingdom': 1, 'United States': 2}
@@ -93,6 +95,10 @@ class StockDetails(FormView):
         StockData.objects.create(company=company, date=cd['date'], high=high, low=low,  # user=self.request.user,
                                  quarter=quarter, quantity=cd['quantity'], gross_value=gross_value)
         return redirect(reverse('search'))
+
+    def form_invalid(self, form):
+        debug(form.errors)
+        return super().form_invalid(form)
 
 
 search = StockDetails.as_view()

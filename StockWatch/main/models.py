@@ -1,11 +1,14 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.datetime_safe import datetime
 
 
 class Company(models.Model):
+    objects = QuerySet.as_manager()
+
     name = models.CharField('Name', max_length=255)
     symbol = models.CharField('Symbol', max_length=50)
 
@@ -14,6 +17,8 @@ class Company(models.Model):
 
 
 class Firm(models.Model):
+    objects = QuerySet.as_manager()
+
     name = models.CharField('Name', max_length=255)
 
 
@@ -57,6 +62,8 @@ class User(AbstractUser):
 
 
 class StockData(models.Model):
+    objects = QuerySet.as_manager()
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='stock_data')
     date = models.DateField('Date')
