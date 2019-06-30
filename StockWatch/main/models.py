@@ -73,16 +73,25 @@ class Currency(models.Model):
         verbose_name_plural = 'Currencies'
 
 
+class StockDataQS(QuerySet):
+    def request_qs(self, request):
+        return StockData.objects.filter(user=request.user)
+
+
 class StockData(models.Model):
-    objects = QuerySet.as_manager()
+    objects = StockDataQS.as_manager()
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='stock_data')
     date = models.DateField('Date')
-    high = models.DecimalField("Day's high", decimal_places=6, max_digits=10)
-    low = models.DecimalField("Day's low", decimal_places=6, max_digits=10)
-    quarter = models.DecimalField("Day's quarter", decimal_places=6, max_digits=10)
+    high = models.DecimalField("Day's high", decimal_places=6, max_digits=20)
+    low = models.DecimalField("Day's low", decimal_places=6, max_digits=20)
+    quarter = models.DecimalField("Day's quarter", decimal_places=6, max_digits=20)
     timestamp = models.DateTimeField('Date searched', auto_now_add=True)
     quantity = models.PositiveIntegerField('Volume')
-    gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=10)
+    gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=20)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    reference = models.CharField('Reference', max_length=255)
+
+    class Meta:
+        ordering = ['-timestamp']

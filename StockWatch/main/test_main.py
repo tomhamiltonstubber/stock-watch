@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 import responses
@@ -200,6 +201,7 @@ def test_timeseries_options(auth_client, timeseries_example):
             'quantity': 2,
             'name': 'Auto Trader London Office',
             'currency': 'GBP',
+            'reference': 'Client 1',
         },
     )
     assert r.status_code == 302
@@ -209,6 +211,7 @@ def test_timeseries_options(auth_client, timeseries_example):
     assert sd.company == Company.objects.get(name='Auto Trader London Office')
     r = auth_client.get(url)
     assert sd.company.name in r.content.decode()
+    assert 'value="Client 1"' in r.content.decode()
 
 
 @pytest.mark.django_db
@@ -226,6 +229,7 @@ def test_timeseries_weekend(auth_client, timeseries_example):
             'quantity': 2,
             'name': 'Auto Trader London Office',
             'currency': 'GBP',
+            'reference': 'Client 1',
         },
     )
     assert r.status_code == 302
@@ -254,11 +258,48 @@ def test_timeseries_out_of_range(auth_client, timeseries_example):
             'quantity': 2,
             'name': 'Auto Trader London Office',
             'currency': 'GBP',
+            'reference': 'Client 1',
         },
     )
     assert r.status_code == 200
     assert 'We have figures between 2019-04-25 - 2019-05-03' in r.content.decode()
     assert not StockData.objects.exists()
+
+
+@pytest.mark.django_db
+@responses.activate
+def test_decimal_error(auth_client):
+    mock_data = {
+        'meta Data': {
+            '1. Information': 'Daily Prices (open, high, low, close) and Volumes',
+            '2. Symbol': 'MSFT',
+            '3. Last Refreshed': '2019-05-03',
+            '4. Output Size': 'Compact',
+            '5. Time Zone': 'US/Eastern',
+        },
+        'Time Series (Daily)': {
+            '2019-05-03': {
+                '1. open': '127.3600',
+                '2. high': '551.2000',
+                '3. low': 'foobar',
+                '4. close': '128.9000',
+                '5. volume': '24911126',
+            }
+        },
+    }
+    responses.add('GET', 'https://www.alphavantage.co/query', json=mock_data)
+    r = auth_client.post(
+        reverse('search'),
+        data={
+            'date': datetime.date(2019, 5, 3).strftime('%d/%m/%Y'),
+            'symbol': 'AUTO.LON',
+            'quantity': 2,
+            'name': 'Auto Trader London Office',
+            'currency': 'GBP',
+            'reference': 'this',
+        },
+    )
+    assert 'Something went wrong' in r.content.decode()
 
 
 @pytest.mark.django_db
@@ -269,6 +310,7 @@ def test_real_vantage_time_series(auth_client):
         'quantity': 2,
         'currency': 'GBP',
         'name': 'AutoTrader',
+        'reference': 'Client 1',
     }
     r = auth_client.post(reverse('search'), data=data)
     assert r.status_code == 302

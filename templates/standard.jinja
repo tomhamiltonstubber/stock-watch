@@ -1,4 +1,5 @@
 {% extends 'base.jinja' %}
+{% import 'macros.jinja' as display with context %}
 
 {% block nav %}
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -24,6 +25,9 @@
 
 {% block body_content %}
   <div class="container">
+    <div>
+      {{ display.django_messages(messages) }}
+    </div>
     {% block content %}{% endblock %}
   </div>
 {% endblock %}

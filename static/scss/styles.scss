@@ -135,11 +135,19 @@ $help-topic-color: $primary-color;
   }
 }
 
-.datepicker {
-  .day {
-    border: none;
+.date-time-picker {
+  max-width: 150px;
+  .datepicker {
+    .day {
+      border: none;
+    }
+
+    .table thead th {
+      border: none;
+    }
   }
-  .table thead th {
-    border: none;
-  }
+}
+
+#id_quantity {
+  width: 150px;
 }

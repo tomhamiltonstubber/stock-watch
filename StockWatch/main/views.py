@@ -1,9 +1,10 @@
 import decimal
+import logging
 from datetime import timedelta
 
 import requests
-from django import forms
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import user_logged_in
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
@@ -14,10 +15,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView
 
-from StockWatch.main.models import Company, Currency, StockData
-from StockWatch.main.widgets import DatePicker
+from StockWatch.main.forms import SearchStockForm
+from StockWatch.main.models import Company, StockData
 
 session = requests.Session()
+
+tc_logger = logging.getLogger('SW')
 
 
 class Login(LoginView):
@@ -52,7 +55,7 @@ def vantage_request(params: dict):
     if r.status_code != 200:
         raise VantageRequestError('Problem accessing URL', r.content.decode())
     data = r.json()
-    if data.get('note'):
+    if data.get('Note'):
         raise VantageRequestError("We've used up all our API calls. Try again in a few minutes.")
     errors = data.get('Error Message')
     if errors:
@@ -75,39 +78,30 @@ def search_company_symbols(request):
     return JsonResponse(data, safe=False)
 
 
-class SearchStockForm(forms.Form):
-    symbol = forms.CharField(widget=forms.HiddenInput)
-    date = forms.DateField(label='')
-    quantity = forms.IntegerField(label='', min_value=1)
-    name = forms.CharField(widget=forms.HiddenInput)
-    currency = forms.CharField(widget=forms.HiddenInput)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['date'].widget = DatePicker(self.fields['date'])
-        self.fields['quantity'].widget.attrs['placeholder'] = 'Quantity'
-
-    def clean_currency(self):
-        return Currency.objects.get(code=self.cleaned_data['currency'])
-
-
 class Search(FormView):
     template_name = 'search.jinja'
     form_class = SearchStockForm
     title = 'Search for stock prices'
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(stock_datas=StockData.objects.order_by('-id')[:20], title=self.title, **kwargs)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
-    def form_valid(self, form):
-        cd = form.cleaned_data
-        params = {'function': 'TIME_SERIES_DAILY', 'symbol': cd['symbol'], 'outputsize': 'compact'}
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(
+            stock_datas=StockData.objects.request_qs(self.request)[:20], title=self.title, **kwargs
+        )
+        return ctx
+
+    def get_stock_data(self, form):
+        params = {'function': 'TIME_SERIES_DAILY', 'symbol': form.cleaned_data['symbol'], 'outputsize': 'compact'}
         data = vantage_request(params)
         stocks_data = data['Time Series (Daily)']
         stock_data = None
         for i in range(7):
             # The market is closed on bank hols and public holidays
-            date = (cd['date'] - timedelta(days=i)).strftime('%Y-%m-%d')
+            date = (form.cleaned_data['date'] - timedelta(days=i)).strftime('%Y-%m-%d')
             stock_data = stocks_data.get(date)
             if stock_data:
                 break
@@ -119,23 +113,31 @@ class Search(FormView):
                 f'We have figures between {dates[-1]} - {dates[0]}',
             )
             return self.form_invalid(form)
-        high = decimal.Decimal(stock_data['2. high'])
-        low = decimal.Decimal(stock_data['3. low'])
-        quarter = low + ((high - low) * decimal.Decimal(0.25))
-        gross_value = round(quarter * cd['quantity'], 2)
+        return stock_data
 
-        company, _ = Company.objects.get_or_create(name=cd['name'], symbol=cd['symbol'])
-        StockData.objects.create(
-            company=company,
-            date=cd['date'],
-            high=high,
-            low=low,
-            user=self.request.user,
-            quarter=quarter,
-            quantity=cd['quantity'],
-            gross_value=gross_value,
-            currency=cd['currency'],
-        )
+    def form_valid(self, form):
+        stock_data = self.get_stock_data(form)
+
+        company, _ = Company.objects.get_or_create(name=form.cleaned_data['name'], symbol=form.cleaned_data['symbol'])
+        obj = form.save(commit=False)
+
+        try:
+            high = decimal.Decimal(stock_data['2. high'])
+            low = decimal.Decimal(stock_data['3. low'])
+            quarter = low + ((high - low) * decimal.Decimal(0.25))
+            obj.company = company
+            obj.high = high
+            obj.low = low
+            obj.quarter = quarter
+            obj.gross_value = round(quarter * form.cleaned_data['quantity'], 2)
+            obj.user = self.request.user
+            obj.save()
+        except decimal.InvalidOperation as e:
+            tc_logger.exception(
+                'DecimalError caused. %s', e, extra={'stock_data': stock_data, 'form_data': form.cleaned_data}
+            )
+            messages.error(self.request, 'Something went wrong there. Please try again.')
+            return self.form_invalid(form)
         return redirect(reverse('search'))
 
 
