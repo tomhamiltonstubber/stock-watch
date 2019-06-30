@@ -1,6 +1,7 @@
 
 [![CircleCI](https://circleci.com/gh/tomhamiltonstubber/stock-watch.svg?style=svg)](https://circleci.com/gh/tomhamiltonstubber/stock-watch)
-[![codecov](https://codecov.io/gh/tomhamiltonstubber/stock-watchbranch/master/graph/badge.svg)](https://codecov.io/gh/tomhamiltonstubber/stock-watch)
+[![codecov](https://codecov.io/gh/tomhamiltonstubber/stock-watch/branch/master/graph/badge.svg)](https://codecov.io/gh/tomhamiltonstubber/stock-watch)
+
 
 
 # Stock Watch
