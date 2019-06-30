@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_jinja',
     'django_extensions',
+    'storages',
     'bootstrap3_datetime',
     'bootstrapform_jinja',
     'debug_toolbar',
@@ -126,6 +127,22 @@ USE_TZ = True
 STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_URL = '/static/'
+
+if LIVE:
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = 'salsa-verde'
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_STATIC_LOCATION = 'static'
+else:
+    MEDIA_ROOT = 'mediafiles'
+    MEDIA_URL = '/media/'
+    PUBLIC_URL = '/media/public/'
+
+
+PRIVATE_FILE_STORAGE = 'main.storage_backends.PrivateMediaStorage'
+
 
 try:
     from localsettings import *  # noqa
