@@ -1,5 +1,7 @@
 {% extends 'standard.jinja' %}
 
 {% block content %}
-  {{ display.render_stock_data(stock_datas) }}
+  <div class="pt-5">
+    {{ display.render_stock_data(object_list) }}
+  </div>
 {% endblock %}

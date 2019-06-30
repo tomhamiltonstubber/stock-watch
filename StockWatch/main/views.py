@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import FormView
+from django.views.generic import FormView, ListView
 
 from StockWatch.main.forms import SearchStockForm
 from StockWatch.main.models import Company, StockData
@@ -90,7 +90,9 @@ class Search(FormView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
-            stock_datas=StockData.objects.request_qs(self.request)[:20], title=self.title, **kwargs
+            stock_datas=StockData.objects.request_qs(self.request).select_related('currency')[:10],
+            title=self.title,
+            **kwargs,
         )
         return ctx
 
@@ -144,3 +146,18 @@ class Search(FormView):
 
 
 search = Search.as_view()
+
+
+class Archive(ListView):
+    template_name = 'archive.jinja'
+    model = StockData
+    title = 'Previous Searches'
+
+    def get_queryset(self):
+        return super().get_queryset().request_qs(self.request).select_related('currency')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return super().get_context_data(title=self.title)
+
+
+archive = Archive.as_view()
