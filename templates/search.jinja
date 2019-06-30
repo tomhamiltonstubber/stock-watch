@@ -35,7 +35,7 @@
       {% for sd in stock_datas %}
         <tr>
           <td>{{ sd.company }}</td>
-          <td>{{ sd.date.strftime('%d-%m-%Y') }}</td>
+          <td>{{ sd.date.strftime('%d/%m/%Y') }}</td>
           <td>{{ sd.currency.symbol }}{{ sd.high|round(3) }}</td>
           <td>{{ sd.currency.symbol }}{{ sd.low|round(3) }}</td>
           <td>{{ sd.currency.symbol }}{{ sd.quarter|round(3) }}</td>

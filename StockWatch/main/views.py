@@ -82,7 +82,7 @@ class SearchStockForm(forms.Form):
     symbol = forms.CharField(widget=forms.HiddenInput)
     date = forms.DateField(label='')
     quantity = forms.IntegerField(label='', min_value=1)
-    name = forms.CharField(widget=forms.HiddenInput, required=False)
+    name = forms.CharField(widget=forms.HiddenInput)
     currency = forms.CharField(widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):

@@ -41,8 +41,6 @@ $(document).ready(() => {
   const EMPTY = `<p id="no-results">No results found.</p>`
   const $spinner = $('#spinner')
   const $search = $('#id_symbol_search')
-  const $symbol = $('#id_symbol')
-  const $currency = $('#id_currency')
   $search.typeahead({
       minLength: 2
     },
@@ -63,8 +61,9 @@ $(document).ready(() => {
     </div>`
       }
     }).on('typeahead:selected', (ev, suggestion) => {
-      $symbol.val(suggestion.symbol)
-      $currency.val(suggestion.currency)
+      $('#id_symbol').val(suggestion.symbol)
+      $('#id_currency').val(suggestion.currency)
+      $('#id_name').val(suggestion.name)
   }).on('typeahead:asyncrequest', () => {
     $spinner.show()
   }).on('typeahead:asynccancel typeahead:asyncreceive', () => $spinner.hide())
