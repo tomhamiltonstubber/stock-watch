@@ -98,26 +98,28 @@ class Search(FormView):
         params = {'function': 'TIME_SERIES_DAILY', 'symbol': form.cleaned_data['symbol'], 'outputsize': 'compact'}
         data = vantage_request(params)
         stocks_data = data['Time Series (Daily)']
+        days = 0
         stock_data = None
-        for i in range(7):
+        while not stock_data:
             # The market is closed on bank hols and public holidays
-            date = (form.cleaned_data['date'] - timedelta(days=i)).strftime('%Y-%m-%d')
+            date = (form.cleaned_data['date'] - timedelta(days=days)).strftime('%Y-%m-%d')
             stock_data = stocks_data.get(date)
             if stock_data:
-                break
-        if not stock_data:
-            dates = list(stocks_data.keys())
-            form.add_error(
-                field=None,
-                error=f"As we're only testing, you can only choose from the first 100 records. "
-                f'We have figures between {dates[-1]} - {dates[0]}',
-            )
-            return self.form_invalid(form)
-        return stock_data
+                return stock_data
+            if days == 7:
+                dates = list(stocks_data.keys())
+                form.add_error(
+                    field=None,
+                    error=f"As we're only testing, you can only choose from the first 100 records. "
+                    f'We have figures between {dates[-1]} - {dates[0]}',
+                )
+                return
+            days += 1
 
     def form_valid(self, form):
         stock_data = self.get_stock_data(form)
-
+        if not stock_data:
+            return self.form_invalid(form)
         company, _ = Company.objects.get_or_create(name=form.cleaned_data['name'], symbol=form.cleaned_data['symbol'])
         obj = form.save(commit=False)
 

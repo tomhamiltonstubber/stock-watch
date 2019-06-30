@@ -75,6 +75,8 @@ class Currency(models.Model):
 
 class StockDataQS(QuerySet):
     def request_qs(self, request):
+        if not request.user.is_authenticated:
+            return StockData.objects.none()
         return StockData.objects.filter(user=request.user)
 
 

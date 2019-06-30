@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from unittest import mock
 
 import pytest
 import responses
