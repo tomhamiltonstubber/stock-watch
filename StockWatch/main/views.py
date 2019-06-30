@@ -100,7 +100,7 @@ class Search(FormView):
     title = 'Search for stock prices'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(stock_datas=StockData.objects.order_by('-id'), title=self.title, **kwargs)
+        return super().get_context_data(stock_datas=StockData.objects.order_by('-id')[:20], title=self.title, **kwargs)
 
     def form_valid(self, form):
         cd = form.cleaned_data
