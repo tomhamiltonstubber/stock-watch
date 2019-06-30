@@ -1,5 +1,4 @@
 import requests
-
 from django.core.management import BaseCommand
 
 from StockWatch.main.models import Currency

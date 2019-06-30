@@ -15,8 +15,10 @@ sentry-sdk==0.7.14
 django-debug-toolbar==1.11
 
 flake8==3.7.7
+isort==4.3.20
 pycodestyle==2.5.0
 pyflakes==2.1.1
+black==19.3b0
 
 pytest==4.3.1
 pytest-django==3.4.8

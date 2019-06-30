@@ -1,6 +1,6 @@
 import datetime
 
-from django.forms import widgets, DateField
+from django.forms import DateField, widgets
 from django.utils.timezone import now
 
 DT_OUTER_PICKER_HTML = """\
@@ -23,7 +23,7 @@ class DatePicker(widgets.DateInput):
             'data-format': self.format,
             'data-minDate': '1900-01-01',
             'data-sideBySide': True,
-            'data-yesterday': (now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+            'data-yesterday': (now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'),
         }
         formats = ['%d/%m/%Y']
         self._is_datetime = True
@@ -39,10 +39,13 @@ class DatePicker(widgets.DateInput):
             return value.strftime(format)
 
     def render(self, name, value, attrs=None, renderer=None):
-        attrs.update({
-            'data-date': self._data_value(value, '%Y-%m-%d'),
-            'data-target': '#' + name,
-            'class': 'form-control datetimepicker-input',
-        })
-        return DT_OUTER_PICKER_HTML.format(input=super().render(name, value, attrs=attrs, renderer=renderer),
-                                           id='datepicker-' + name)
+        attrs.update(
+            {
+                'data-date': self._data_value(value, '%Y-%m-%d'),
+                'data-target': '#' + name,
+                'class': 'form-control datetimepicker-input',
+            }
+        )
+        return DT_OUTER_PICKER_HTML.format(
+            input=super().render(name, value, attrs=attrs, renderer=renderer), id='datepicker-' + name
+        )

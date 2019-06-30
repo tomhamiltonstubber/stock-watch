@@ -15,7 +15,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-py-requirements-{{ checksum "requirements.txt" }}
+          - requirements-{{ checksum "requirements.txt" }}
           - grablib-files-{{ checksum "grablib.yml" }}
 
       - run:
@@ -23,14 +23,13 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
-            grablib
+            make install-all
             ./manage.py collectstatic --noinput --verbosity 0
 
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: requirements-{{ checksum "requirements.txt" }}
 
       - save_cache:
           key: grablib-files-{{ checksum "grablib.yml" }}

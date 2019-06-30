@@ -2,12 +2,11 @@ import decimal
 from datetime import timedelta
 
 import requests
+from django import forms
 from django.conf import settings
 from django.contrib.auth import user_logged_in
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-
-from django import forms
 from django.dispatch import receiver
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -15,7 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView
 
-from StockWatch.main.models import StockData, Company, Currency
+from StockWatch.main.models import Company, Currency, StockData
 from StockWatch.main.widgets import DatePicker
 
 session = requests.Session()
@@ -68,12 +67,10 @@ def search_company_symbols(request):
     # TODO: Store data in db for quicker access
     params = {'function': 'SYMBOL_SEARCH', 'keywords': request.GET.get('q')}
     r = vantage_request(params)
-    data = [{
-        'symbol': d['1. symbol'],
-        'name': d['2. name'],
-        'region': d['4. region'],
-        'currency': d['8. currency'],
-    } for d in r['bestMatches']]
+    data = [
+        {'symbol': d['1. symbol'], 'name': d['2. name'], 'region': d['4. region'], 'currency': d['8. currency']}
+        for d in r['bestMatches']
+    ]
     data = sorted(data, key=lambda x: REGION_ORDER.get(x['region'], 10))
     return JsonResponse(data, safe=False)
 
@@ -116,8 +113,11 @@ class Search(FormView):
                 break
         if not stock_data:
             dates = list(stocks_data.keys())
-            form.add_error(field=None, error=f"As we're only testing, you can only choose from the first 100 records. "
-                                             f'We have figures between {dates[-1]} - {dates[0]}')
+            form.add_error(
+                field=None,
+                error=f"As we're only testing, you can only choose from the first 100 records. "
+                f'We have figures between {dates[-1]} - {dates[0]}',
+            )
             return self.form_invalid(form)
         high = decimal.Decimal(stock_data['2. high'])
         low = decimal.Decimal(stock_data['3. low'])
@@ -125,9 +125,17 @@ class Search(FormView):
         gross_value = round(quarter * cd['quantity'], 2)
 
         company, _ = Company.objects.get_or_create(name=cd['name'], symbol=cd['symbol'])
-        StockData.objects.create(company=company, date=cd['date'], high=high, low=low,  user=self.request.user,
-                                 quarter=quarter, quantity=cd['quantity'], gross_value=gross_value,
-                                 currency=cd['currency'])
+        StockData.objects.create(
+            company=company,
+            date=cd['date'],
+            high=high,
+            low=low,
+            user=self.request.user,
+            quarter=quarter,
+            quantity=cd['quantity'],
+            gross_value=gross_value,
+            currency=cd['currency'],
+        )
         return redirect(reverse('search'))
 
 
