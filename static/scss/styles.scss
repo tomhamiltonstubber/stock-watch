@@ -12,45 +12,14 @@ $primary-color: lightblue;
 $small: 768px;
 $help-topic-color: $primary-color;
 
-.search-bar {
-  margin: 0 auto;
-  white-space: nowrap;
-  position: relative;
-  padding-top: 30px;
-  #search-form {
-    text-align: center;
-    .fa-search {
-      position: absolute;
-      margin-left: 14px;
-      margin-top: 15px;
-      z-index: 1;
-      color: #aaa;
-      @media (max-width: $small) {
-        margin-left: 14px;
-        margin-top: 15px;
-      }
-    }
-    #id_symbol_search {
-      width: calc(100% - 45px);
-      height: 45px;
-      font-size: 1rem;
-      @media (max-width: $small) {
-        font-size: 0.8rem;
-      }
-      color: #444;
-      background: white !important;
-      padding-left: 45px;
-      border: 1px solid #ddd;
-      &::placeholder {
-        color: #aaa;
-        content: 'Search...';
-      }
-    }
+
+#search-form {
+  text-align: center;
+  .search {
+    width: 300px;
   }
-  &.article {
-    background: none;
-    padding-bottom: 40px;
-    padding-top: 0;
+  .form-group, .input-group {
+    margin: 0 10px;
   }
 }
 
@@ -161,3 +130,11 @@ $help-topic-color: $primary-color;
   }
 }
 
+.datepicker {
+  .day {
+    border: none;
+  }
+  .table thead th {
+    border: none;
+  }
+}

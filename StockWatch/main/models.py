@@ -61,6 +61,18 @@ class User(AbstractUser):
         verbose_name_plural = 'Users'
 
 
+class Currency(models.Model):
+    objects = QuerySet.as_manager()
+
+    name = models.CharField('Name', max_length=255, unique=True)
+    code = models.CharField('Code', max_length=3, unique=True)
+    symbol = models.CharField('Symbol', max_length=5)
+
+    class Meta:
+        verbose_name = 'Currency'
+        verbose_name_plural = 'Currencies'
+
+
 class StockData(models.Model):
     objects = QuerySet.as_manager()
 
@@ -73,3 +85,4 @@ class StockData(models.Model):
     timestamp = models.DateTimeField('Date searched', auto_now_add=True)
     quantity = models.PositiveIntegerField('Volume')
     gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=10)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)

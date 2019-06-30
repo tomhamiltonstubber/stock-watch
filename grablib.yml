@@ -13,10 +13,10 @@ download:
   'CDNJS/corejs-typeahead/1.2.1/bloodhound.js': 'js/bloodhound.js'
   'CDNJS/corejs-typeahead/1.2.1/typeahead.bundle.js': 'js/typeahead.js'
 
-  'GITHUB/Eonasdan/bootstrap-datetimepicker/4.17.47/build/js/bootstrap-datetimepicker.min.js': 'js/dt-picker.js'
-  'GITHUB/Eonasdan/bootstrap-datetimepicker/4.17.47/build/css/bootstrap-datetimepicker.css': 'css/dt-picker.css'
+  'CDNJS/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.js': 'js/dtp.js'
+  'CDNJS/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.css': 'css/dtp.css'
 
-  'GITHUB/moment/moment/2.13.0/min/moment.min.js': 'js/moment.js'
+  'GITHUB/moment/moment/2.24.0/min/moment.min.js': 'js/moment.js'
 
 build_root: static/
 debug: true
@@ -27,12 +27,12 @@ build:
       - 'DL/js/moment.js'
       - 'DL/js/jquery.js'
       - 'DL/js/bootstrap.js'
-      - 'DL/js/dt-picker.js'
+      - 'DL/js/dtp.js'
       - 'DL/js/bloodhound.js'
       - 'DL/js/typeahead.js'
     'scss/libraries.scss':
       - 'DL/css/bootstrap.css'
-      - 'DL/css/dt-picker.css'
+      - 'DL/css/dtp.css'
       - 'DL/css/font-awesome.css'
   sass:
     css:

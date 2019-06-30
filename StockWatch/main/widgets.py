@@ -1,11 +1,14 @@
+import datetime
+
 from django.forms import widgets, DateField
+from django.utils.timezone import now
 
 DT_OUTER_PICKER_HTML = """\
-<div class="input-group date date-picker">
-  {}
-  <span class="input-group-addon">
-    <i class="fa fa-calendar"></i>
-  </span>
+<div class="input-group date date-time-picker" data-target-input="nearest" id="{id}">
+  {input}
+  <div class="input-group-append" data-target="#{id}" data-toggle="datetimepicker">
+    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+  </div>
 </div>"""
 
 
@@ -19,7 +22,8 @@ class DatePicker(widgets.DateInput):
             'data-type': 'date',
             'data-format': self.format,
             'data-minDate': '1900-01-01',
-            'data-sideBySide': True
+            'data-sideBySide': True,
+            'data-yesterday': (now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         }
         formats = ['%d/%m/%Y']
         self._is_datetime = True
@@ -37,5 +41,8 @@ class DatePicker(widgets.DateInput):
     def render(self, name, value, attrs=None, renderer=None):
         attrs.update({
             'data-date': self._data_value(value, '%Y-%m-%d'),
+            'data-target': '#' + name,
+            'class': 'form-control datetimepicker-input',
         })
-        return DT_OUTER_PICKER_HTML.format(super().render(name, value, attrs=attrs, renderer=renderer))
+        return DT_OUTER_PICKER_HTML.format(input=super().render(name, value, attrs=attrs, renderer=renderer),
+                                           id='datepicker-' + name)

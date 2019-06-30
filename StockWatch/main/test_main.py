@@ -5,7 +5,7 @@ import pytest
 import responses
 from django.urls import reverse
 
-from StockWatch.main.models import StockData, Company, User, Firm
+from StockWatch.main.models import StockData, Company, User, Firm, Currency
 from StockWatch.main.views import VantageRequestError
 
 
@@ -108,6 +108,7 @@ def auth_client(client):
                                     firm=Firm.objects.create(name='123 Firm Ltd'))
     logged_in = client.login(username=user.email, password='testing')
     assert logged_in, 'Not logged in'
+    Currency.objects.create(code='GBP', name='GBP', symbol='£')
     return client
 
 
@@ -183,7 +184,8 @@ def test_timeseries_options(auth_client, timeseries_example):
         'date': datetime.date(2019, 4, 30).strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
-        'name': 'Auto Trader London Office'
+        'name': 'Auto Trader London Office',
+        'currency': 'GBP',
     })
     assert r.status_code == 302
     sd = StockData.objects.get()
@@ -205,13 +207,16 @@ def test_timeseries_weekend(auth_client, timeseries_example):
         'date': datetime.date(2019, 4, 28).strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
-        'name': 'Auto Trader London Office'
+        'name': 'Auto Trader London Office',
+        'currency': 'GBP',
     })
     assert r.status_code == 302
     sd = StockData.objects.get()
     assert sd.high == Decimal('130.5152')
     assert sd.date == datetime.date(2019, 4, 28)
+    assert sd.currency == Currency.objects.get(symbol='£')
     assert sd.company == Company.objects.get(name='Auto Trader London Office')
+    assert sd.user == User.objects.get()
     r = auth_client.get(url)
     assert sd.company.name in r.content.decode()
 
@@ -227,7 +232,8 @@ def test_timeseries_out_of_range(auth_client, timeseries_example):
         'date': datetime.date(2019, 4, 24).strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
-        'name': 'Auto Trader London Office'
+        'name': 'Auto Trader London Office',
+        'currency': 'GBP',
     })
     assert r.status_code == 200
     assert 'We have figures between 2019-04-25 - 2019-05-03' in r.content.decode()
@@ -240,6 +246,7 @@ def test_real_vantage_time_series(auth_client):
         'date': datetime.date.today().strftime('%d/%m/%Y'),
         'symbol': 'AUTO.LON',
         'quantity': 2,
+        'currency': 'GBP',
     }
     r = auth_client.post(reverse('search'), data=data)
     assert r.status_code == 302

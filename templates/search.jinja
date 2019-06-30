@@ -5,20 +5,15 @@
     <div class="col-md-12">
       <form method="post" class="form-inline" id="search-form" enctype="multipart/form-data" autocomplete="off">
         {% csrf_token %}
-        <div class="form-group col-5">
+        <div class="form-group search">
           <input type="text" placeholder="Company" class=" form-control" required="" id="id_symbol_search">
         </div>
-        <div class="input-group date date-picker col-3">
-          <input type="text" placeholder="Date" name="date" data-type="date" data-format="DD/MM/YYYY" data-mindate="1900-01-01" data-sidebyside="" class=" form-control" required="" id="id_date" data-date="">
-          <span class="input-group-addon">
-            <i class="fa fa-calendar"></i>
-          </span>
-        </div>
-        <div class="form-group col-2">
-          <input type="number" placeholder="Quantity" name="quantity" min="1" class="form-control" required="" id="id_quantity">
-        </div>
+        {{ form.date }}
+        {{ form.quantity | bootstrap }}
         {{ form.errors.as_text() }}
+
         {{ form.name }}
+        {{ form.currency }}
         {{ form.symbol }}
         <button class="btn btn-primary col-2" type="submit">Submit</button>
       </form>
@@ -40,12 +35,12 @@
       {% for sd in stock_datas %}
         <tr>
           <td>{{ sd.company }}</td>
-          <td>{{ sd.date }}</td>
-          <td>{{ sd.high }}</td>
-          <td>{{ sd.low }}</td>
-          <td>{{ sd.quarter }}</td>
+          <td>{{ sd.date.strftime('%d-%m-%Y') }}</td>
+          <td>{{ sd.currency.symbol }}{{ sd.high|round(3) }}</td>
+          <td>{{ sd.currency.symbol }}{{ sd.low|round(3) }}</td>
+          <td>{{ sd.currency.symbol }}{{ sd.quarter|round(3) }}</td>
           <td>{{ sd.quantity }}</td>
-          <td>{{ sd.gross_value }}</td>
+          <td>{{ sd.currency.symbol }}{{ sd.gross_value|round(3) }}</td>
         </tr>
       {% endfor %}
     </tbody>

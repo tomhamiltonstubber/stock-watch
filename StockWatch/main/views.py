@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView
 
-from StockWatch.main.models import StockData, Company
+from StockWatch.main.models import StockData, Company, Currency
 from StockWatch.main.widgets import DatePicker
 
 session = requests.Session()
@@ -83,10 +83,15 @@ class SearchStockForm(forms.Form):
     date = forms.DateField(label='')
     quantity = forms.IntegerField(label='', min_value=1)
     name = forms.CharField(widget=forms.HiddenInput, required=False)
+    currency = forms.CharField(widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].widget = DatePicker(self.fields['date'])
+        self.fields['quantity'].widget.attrs['placeholder'] = 'Quantity'
+
+    def clean_currency(self):
+        return Currency.objects.get(code=self.cleaned_data['currency'])
 
 
 class Search(FormView):
@@ -120,8 +125,9 @@ class Search(FormView):
         gross_value = round(quarter * cd['quantity'], 2)
 
         company, _ = Company.objects.get_or_create(name=cd['name'], symbol=cd['symbol'])
-        StockData.objects.create(company=company, date=cd['date'], high=high, low=low,  # user=self.request.user,
-                                 quarter=quarter, quantity=cd['quantity'], gross_value=gross_value)
+        StockData.objects.create(company=company, date=cd['date'], high=high, low=low,  user=self.request.user,
+                                 quarter=quarter, quantity=cd['quantity'], gross_value=gross_value,
+                                 currency=cd['currency'])
         return redirect(reverse('search'))
 
 

@@ -10,7 +10,7 @@ $(document).ready(() => {
     clear: 'fa fa-trash',
     close: 'fa fa-remove'
   }
-  $('.date-picker').each((i, el) => {
+  $('.date-time-picker').each((i, el) => {
     const $el = $(el)
     const $input = $el.find('input')
     const $init = $('#initial-' + $input.attr('id'))
@@ -19,7 +19,14 @@ $(document).ready(() => {
       format: $input.data('format'),
       date: $init.val(),
       maxDate: 'now',
+      defaultDate: $input.data('yesterday'),
     })
+  })
+  $(document).on('mouseup touchend', function (e) {
+    let container = $('.bootstrap-datetimepicker-widget')
+    if (!container.is(e.target) && container.has(e.target).length === 0) {
+      container.parent().datetimepicker('hide')
+    }
   })
 
   const search_source = new Bloodhound({
@@ -35,6 +42,7 @@ $(document).ready(() => {
   const $spinner = $('#spinner')
   const $search = $('#id_symbol_search')
   const $symbol = $('#id_symbol')
+  const $currency = $('#id_currency')
   $search.typeahead({
       minLength: 2
     },
@@ -56,6 +64,7 @@ $(document).ready(() => {
       }
     }).on('typeahead:selected', (ev, suggestion) => {
       $symbol.val(suggestion.symbol)
+      $currency.val(suggestion.currency)
   }).on('typeahead:asyncrequest', () => {
     $spinner.show()
   }).on('typeahead:asynccancel typeahead:asyncreceive', () => $spinner.hide())
