@@ -6,12 +6,17 @@ $primary-color: lightblue;
 
 .header {
   height: 50px;
-  background: $primary-color;
+  background: $primary-color !important;
 }
 
 $small: 768px;
 $help-topic-color: $primary-color;
 
+.navbar {
+  &.bg-light {
+    background-color: $primary-color !important;
+  }
+}
 
 #search-form {
   text-align: center;

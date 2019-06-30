@@ -17,6 +17,7 @@ download:
   'CDNJS/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.css': 'css/dtp.css'
 
   'GITHUB/moment/moment/2.24.0/min/moment.min.js': 'js/moment.js'
+  'CDNJS/bootbox.js/4.4.0/bootbox.js': 'js/bootbox.js'
 
 build_root: static/
 debug: true
@@ -30,6 +31,7 @@ build:
       - 'DL/js/dtp.js'
       - 'DL/js/bloodhound.js'
       - 'DL/js/typeahead.js'
+      - 'DL/js/bootbox.js'
     'scss/libraries.scss':
       - 'DL/css/bootstrap.css'
       - 'DL/css/dtp.css'

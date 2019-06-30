@@ -1,4 +1,10 @@
 $(document).ready(() => {
+  init_confirm_follow()
+  init_dtps()
+  init_search()
+})
+
+const init_dtps = () => {
   const icons = {
     time: 'fa fa-clock',
     date: 'fa fa-calendar',
@@ -10,6 +16,7 @@ $(document).ready(() => {
     clear: 'fa fa-trash',
     close: 'fa fa-remove'
   }
+
   $('.date-time-picker').each((i, el) => {
     const $el = $(el)
     const $input = $el.find('input')
@@ -28,7 +35,9 @@ $(document).ready(() => {
       container.parent().datetimepicker('hide')
     }
   })
+}
 
+const init_search = () => {
   const search_source = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -70,4 +79,61 @@ $(document).ready(() => {
 
   // For testing
   // $(document).on('typeahead:beforeclose', (event) => event.preventDefault())
-})
+}
+
+const init_confirm_follow = () => {
+  const $el = $(document)
+  $el.find('[data-confirm]').click(function (e) {
+    let $a = $(this)
+    const target = $a.attr('target')
+    let link = $a.attr('href')
+    let method = $a.data('method') || 'POST'
+    e.preventDefault()
+    bootbox.confirm({
+      message: $a.data('confirm'),
+      title: $a.data('confirm-title') || null,
+      callback: result => {
+        if (result) {
+          if (method.toLowerCase() === 'post') {
+            let form = $('#post-form')
+            form.attr('action', link)
+            $.each($a.data(), function (k, v) {
+              if (k === 'method') {
+                return
+              }
+              $('<input>').attr({
+                type: 'hidden',
+                name: k,
+                value: v
+              }).appendTo(form)
+            })
+            if (target) {
+              window.open(link, target)
+            } else {
+              form.submit()
+            }
+          } else {
+            document.location.href = link
+          }
+        }
+      }
+    })
+  })
+
+  $('[data-method="POST"]').not('[data-confirm]').not('.no-submit').click(function (e) {
+    const $a = $(this)
+    const link = $a.attr('href')
+    e.preventDefault()
+    if (link === '#') {
+      return
+    }
+    const form = $('#post-form')
+    form.attr('action', link)
+    for (const [key, value] of Object.entries($a.data())) {
+      if (key !== 'method') {
+        $('<input>').attr({type: 'hidden', name: key, value: value}).appendTo(form)
+      }
+    }
+    form.submit()
+  })
+}
