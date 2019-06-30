@@ -10,3 +10,6 @@ coverage.xml
 *.dump
 localsettings.py
 db.sqlite3
+
+static/libs/
+static/css/

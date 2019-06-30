@@ -235,7 +235,6 @@ def test_timeseries_out_of_range(auth_client, timeseries_example):
 
 
 @pytest.mark.django_db
-@responses.activate
 def test_real_vantage_time_series(auth_client):
     data = {
         'date': datetime.date.today().strftime('%d/%m/%Y'),
@@ -247,7 +246,6 @@ def test_real_vantage_time_series(auth_client):
 
 
 @pytest.mark.django_db
-@responses.activate
 def test_real_vantage_symbol_search(auth_client):
     r = auth_client.get(reverse('symbol-search'), {'q': 'microsoft'})
     assert r.status_code == 200
