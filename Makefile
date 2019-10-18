@@ -4,7 +4,7 @@ isort = isort -rc
 
 .PHONY: reset-db
 reset-db:
-	psql -h localhost -U postgres -c "DROP DATABASE stockwatch"
+	psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS stockwatch"
 	psql -h localhost -U postgres -c "CREATE DATABASE stockwatch"
 
 .PHONY: test

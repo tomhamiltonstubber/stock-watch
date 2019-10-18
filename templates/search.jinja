@@ -6,19 +6,18 @@
       <form method="post" class="form-inline" id="search-form" enctype="multipart/form-data" autocomplete="off">
         {% csrf_token %}
         <div class="form-group search">
-          <input type="text" placeholder="Company" class=" form-control" required="" id="id_symbol_search">
+          <select class=" form-control" required="" id="id_company" name="company"></select>
         </div>
         {{ form.date }}
         {{ form.quantity | bootstrap }}
         {{ form.reference | bootstrap }}
         {{ form.errors.as_text() }}
-
-        {{ form.name }}
-        {{ form.currency }}
-        {{ form.symbol }}
         <button class="btn btn-primary" type="submit">Submit</button>
       </form>
     </div>
   </div>
   {{ display.render_stock_data(stock_datas) }}
+  <script>
+    window.symbol_search_url = '{{ symbol_search_url }}'
+  </script>
 {% endblock %}

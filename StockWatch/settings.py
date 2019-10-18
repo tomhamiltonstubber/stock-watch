@@ -13,10 +13,12 @@ LIVE = os.getenv('LIVE')
 ALLOWED_HOSTS = ['valores.herokuapp.com', 'localhost']
 
 VANTAGE_API_KEY = os.getenv('VANTAGE_API_KEY', '73KB3IKLT977N1M6')
+QUANDL_API_KEY = os.getenv('QUANDL_API_KEY', '')
 
 AUTH_USER_MODEL = 'main.User'
 
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

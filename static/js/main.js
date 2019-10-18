@@ -1,7 +1,7 @@
 $(document).ready(() => {
   init_confirm_follow()
   init_dtps()
-  init_search()
+  render_search()
 })
 
 const init_dtps = () => {
@@ -37,48 +37,40 @@ const init_dtps = () => {
   })
 }
 
-const init_search = () => {
-  const search_source = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.whitespace,
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    remote: {
-      url: '/search/symbols/?q={query}',
-      wildcard: '{query}'
-    }
-  })
 
-  const EMPTY = `<p id="no-results">No results found.</p>`
-  const $spinner = $('#spinner')
-  const $search = $('#id_symbol_search')
-  $search.typeahead({
-      minLength: 2
+const render_search = () => {
+  const $search = $('#id_company')
+  if (!$search.length) {
+    return
+  }
+  $search.select2({
+    ajax: {
+      url: window.symbol_search_url,
+      dataType: 'json',
+      delay: 400,
+      data: function (params) {
+        return {
+          q: params.term,
+        }
+      },
+      processResults: function (data) {
+        return {
+          results: $.map(data, (item) => {
+            return {
+              text: item.text,
+              id: item.id,
+            }
+          })
+        }
+      },
+      cache: true
     },
-    {
-      source: search_source,
-      display: 'name',
-      limit: 20,
-      templates: {
-        empty: EMPTY,
-        suggestion: (v) => `<div>
-      <div>
-        <span class="tag">${v.symbol}</span>
-        <b>${v.name}</b>
-      </div>
-      <small>
-        ${v.region} (${v.currency})
-      </small>
-    </div>`
-      }
-    }).on('typeahead:selected', (ev, suggestion) => {
-      $('#id_symbol').val(suggestion.symbol)
-      $('#id_currency').val(suggestion.currency)
-      $('#id_name').val(suggestion.name)
-  }).on('typeahead:asyncrequest', () => {
-    $spinner.show()
-  }).on('typeahead:asynccancel typeahead:asyncreceive', () => $spinner.hide())
-
-  // For testing
-  // $(document).on('typeahead:beforeclose', (event) => event.preventDefault())
+    minimumInputLength: 3,
+    allowClear: false,
+    placeholder: 'Click to select a company',
+    theme: 'bootstrap4',
+    width: '100%',
+  })
 }
 
 const init_confirm_follow = () => {

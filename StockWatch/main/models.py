@@ -32,7 +32,10 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, firm, password, **extra_fields):
-        return self._create_user(email=email, password=password, firm=firm, **extra_fields)
+        return self._create_user(email=email, password=password, is_superuser=False, firm=firm, **extra_fields)
+
+    def create_super_user(self, email, password, **extra_fields):
+        return self._create_user(email=email, password=password, is_superuser=True, **extra_fields)
 
 
 class User(AbstractUser):
@@ -48,7 +51,9 @@ class User(AbstractUser):
     country = models.CharField('Country', max_length=50, null=True, blank=True)
     postcode = models.CharField('Postcode', max_length=20, null=True, blank=True)
     phone = models.CharField('Phone', max_length=255, null=True, blank=True)
-    firm = models.ForeignKey(Firm, verbose_name='Company', on_delete=models.CASCADE)
+    firm = models.ForeignKey(
+        Firm, verbose_name='Company', related_name='users', null=True, blank=True, on_delete=models.CASCADE
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -92,7 +97,7 @@ class StockData(models.Model):
     timestamp = models.DateTimeField('Date searched', auto_now_add=True)
     quantity = models.PositiveIntegerField('Volume')
     gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=20)
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, blank=True)
     reference = models.CharField('Reference', max_length=255)
 
     class Meta:

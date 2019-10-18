@@ -1,15 +1,13 @@
 from django import forms
 
-from StockWatch.main.models import Currency, StockData
+from StockWatch.main.models import Currency, StockData, Company
 from StockWatch.main.widgets import DatePicker
 
 
 class SearchStockForm(forms.ModelForm):
-    symbol = forms.CharField(widget=forms.HiddenInput)
+    company = forms.ModelChoiceField(Company.objects.all(), label='')
     date = forms.DateField(label='')
-    quantity = forms.IntegerField(label='', min_value=1)
-    name = forms.CharField(widget=forms.HiddenInput)
-    currency = forms.CharField(widget=forms.HiddenInput)
+    quantity = forms.IntegerField(label='', min_value=1, initial=1)
     reference = forms.CharField(label='')
 
     def __init__(self, request, *args, **kwargs):
@@ -21,9 +19,6 @@ class SearchStockForm(forms.ModelForm):
         if most_recent:
             self.fields['reference'].initial = most_recent.reference
 
-    def clean_currency(self):
-        return Currency.objects.get(code=self.cleaned_data['currency'])
-
     class Meta:
         model = StockData
-        fields = 'reference', 'quantity', 'date', 'currency'
+        fields = 'reference', 'quantity', 'date'

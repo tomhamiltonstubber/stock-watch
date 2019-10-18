@@ -19,6 +19,10 @@ download:
   'GITHUB/moment/moment/2.24.0/min/moment.min.js': 'js/moment.js'
   'CDNJS/bootbox.js/4.4.0/bootbox.js': 'js/bootbox.js'
 
+  'GITHUB/select2/select2/4.0.7/dist/js/select2.full.js': 'js/'
+  'GITHUB/select2/select2/4.0.7/dist/css/select2.css': 'css/'
+  'GITHUB/ttskch/select2-bootstrap4-theme/1.2.2/dist/select2-bootstrap4.css': 'css/'
+
 build_root: static/
 debug: true
 build:
@@ -32,10 +36,13 @@ build:
       - 'DL/js/bloodhound.js'
       - 'DL/js/typeahead.js'
       - 'DL/js/bootbox.js'
+      - 'DL/js/select2.full.js'
     'scss/libraries.scss':
       - 'DL/css/bootstrap.css'
       - 'DL/css/dtp.css'
       - 'DL/css/font-awesome.css'
+      - 'DL/css/select2.css'
+      - 'DL/css/select2-bootstrap4.css'
   sass:
     css:
       src: 'static/scss'

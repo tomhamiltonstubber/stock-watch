@@ -6,7 +6,7 @@ import responses
 from django.urls import reverse
 
 from StockWatch.main.models import Company, Currency, Firm, StockData, User
-from StockWatch.main.views import VantageRequestError
+from StockWatch.main.vantage import VantageRequestError
 
 
 @pytest.fixture()
