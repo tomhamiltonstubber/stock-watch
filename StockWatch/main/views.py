@@ -1,6 +1,5 @@
 import decimal
 import logging
-from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import user_logged_in
@@ -15,9 +14,8 @@ from django.utils import timezone
 from django.views.generic import FormView, ListView
 
 from StockWatch.main.forms import SearchStockForm
-from StockWatch.main.models import Company, StockData
-from StockWatch.main.quandl import get_historical_data
-from StockWatch.main.vantage import vantage_request
+from StockWatch.main.models import Company, StockData, Currency
+from StockWatch.main.eodhistoricaldata import get_historical_data
 
 
 tc_logger = logging.getLogger('SW')
@@ -74,31 +72,31 @@ class Search(FormView):
         return ctx
 
     def form_valid(self, form):
-        stock_data = get_historical_data(form.cleaned_data['date'], form.cleaned_data['company'].symbol)
+        cd = form.cleaned_data
+        stock_data = get_historical_data(form.cleaned_data['date'], cd['company'].symbol)
         if not stock_data:
             return self.form_invalid(form)
-        debug(stock_data)
-        raise AssertionError
-        company, _ = Company.objects.get_or_create(name=form.cleaned_data['name'], symbol=form.cleaned_data['symbol'])
         obj = form.save(commit=False)
 
         try:
-            high = decimal.Decimal(stock_data['2. high'])
-            low = decimal.Decimal(stock_data['3. low'])
+            high = decimal.Decimal(stock_data['High'])
+            low = decimal.Decimal(stock_data['Low'])
             quarter = low + ((high - low) * decimal.Decimal(0.25))
-            obj.company = company
-            obj.high = high
-            obj.low = low
-            obj.quarter = quarter
-            obj.gross_value = round(quarter * form.cleaned_data['quantity'], 2)
-            obj.user = self.request.user
-            obj.save()
+            obj.gross_value = round(quarter * cd['quantity'], 2)
         except decimal.InvalidOperation as e:
             tc_logger.exception(
                 'DecimalError caused. %s', e, extra={'stock_data': stock_data, 'form_data': form.cleaned_data}
             )
             messages.error(self.request, 'Something went wrong there. Please try again.')
             return self.form_invalid(form)
+        # TODO: Support different currencies
+        obj.currency, _ = Currency.objects.get_or_create(name='Great British Pound', symbol='£', code='GBP')
+        obj.company = cd['company']
+        obj.high = high
+        obj.low = low
+        obj.quarter = quarter
+        obj.user = self.request.user
+        obj.save()
         return redirect(reverse('search'))
 
 

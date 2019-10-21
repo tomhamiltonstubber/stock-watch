@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 import requests
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 
 
@@ -8,7 +11,7 @@ class VantageRequestError(Exception):
     pass
 
 
-session = requests.Session
+session = requests.Session()
 
 
 def vantage_request(params: dict):
@@ -38,24 +41,24 @@ def search_company_symbols(request):
     data = sorted(data, key=lambda x: REGION_ORDER.get(x['region'], 10))
     return JsonResponse(data, safe=False)
 
-# def get_stock_data(self, form):
-#     params = {'function': 'TIME_SERIES_DAILY', 'symbol': form.cleaned_data['symbol'], 'outputsize': 'compact'}
-#     data = vantage_request(params)
-#     stocks_data = data['Time Series (Daily)']
-#     days = 0
-#     stock_data = None
-#     while not stock_data:
-#         # The market is closed on bank hols and public holidays
-#         date = (form.cleaned_data['date'] - timedelta(days=days)).strftime('%Y-%m-%d')
-#         stock_data = stocks_data.get(date)
-#         if stock_data:
-#             return stock_data
-#         if days == 7:
-#             dates = list(stocks_data.keys())
-#             form.add_error(
-#                 field=None,
-#                 error=f"As we're only testing, you can only choose from the first 100 records. "
-#                 f'We have figures between {dates[-1]} - {dates[0]}',
-#             )
-#             return
-#         days += 1
+
+def get_stock_data(date, symbol):
+    params = {'function': 'TIME_SERIES_DAILY', 'symbol': symbol, 'outputsize': 'compact'}
+    data = vantage_request(params)
+    stocks_data = data['Time Series (Daily)']
+    days = 0
+    stock_data = None
+    while not stock_data:
+        # The market is closed on bank hols and public holidays
+        date = (date - timedelta(days=days)).strftime('%Y-%m-%d')
+        stock_data = stocks_data.get(date)
+        if stock_data:
+            return stock_data
+        if days == 7:
+            dates = list(stocks_data.keys())
+            raise ValidationError(
+                f"As we're only testing, you can only choose from the first 100 records." 
+                f"We have figures between {dates[-1]} - {dates[0]}",
+            )
+        days += 1
+    return stock_data

@@ -14,6 +14,7 @@ ALLOWED_HOSTS = ['valores.herokuapp.com', 'localhost']
 
 VANTAGE_API_KEY = os.getenv('VANTAGE_API_KEY', '73KB3IKLT977N1M6')
 QUANDL_API_KEY = os.getenv('QUANDL_API_KEY', '')
+EOD_HD_API_KEY = os.getenv('EOD_HD_API_KEY', '')
 
 AUTH_USER_MODEL = 'main.User'
 
