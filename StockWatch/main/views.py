@@ -74,6 +74,7 @@ class Search(FormView):
     def form_valid(self, form):
         cd = form.cleaned_data
         stock_data = get_historical_data(form.cleaned_data['date'], cd['company'].symbol)
+        debug(stock_data)
         if not stock_data:
             return self.form_invalid(form)
         obj = form.save(commit=False)

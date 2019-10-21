@@ -12,3 +12,5 @@ localsettings.py
 
 static/libs/
 static/css/
+data/*
+!data/__init__.py

@@ -10,7 +10,7 @@ class Company(models.Model):
     objects = QuerySet.as_manager()
 
     name = models.CharField('Name', max_length=255)
-    symbol = models.CharField('Symbol', max_length=50)
+    symbol = models.CharField('Symbol', max_length=50, unique=True)
 
     def __str__(self):
         return f'{self.name} ({self.symbol})'

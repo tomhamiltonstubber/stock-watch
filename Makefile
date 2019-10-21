@@ -9,7 +9,7 @@ reset-db:
 
 .PHONY: test
 test:
-	pytest StockWatch/ --cov=StockWatch
+	pytest StockWatch/tests/ --cov=StockWatch
 
 .PHONY: lint
 lint:
