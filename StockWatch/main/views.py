@@ -13,10 +13,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView, ListView
 
-from StockWatch.main.forms import SearchStockForm
-from StockWatch.main.models import Company, StockData, Currency
 from StockWatch.main.eodhistoricaldata import get_historical_data
-
+from StockWatch.main.forms import SearchStockForm
+from StockWatch.main.models import Company, Currency, StockData
 
 tc_logger = logging.getLogger('SW')
 
@@ -74,9 +73,10 @@ class Search(FormView):
     def form_valid(self, form):
         cd = form.cleaned_data
         stock_data = get_historical_data(form.cleaned_data['date'], cd['company'].symbol)
-        debug(stock_data)
         if not stock_data:
+            form.add_error('__all__', 'No stock data for that day')
             return self.form_invalid(form)
+        stock_data = stock_data[0]
         obj = form.save(commit=False)
 
         try:

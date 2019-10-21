@@ -21,6 +21,9 @@ class Firm(models.Model):
 
     name = models.CharField('Name', max_length=255)
 
+    def str(self):
+        return self.name
+
 
 class UserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -73,6 +76,9 @@ class Currency(models.Model):
     code = models.CharField('Code', max_length=3, unique=True)
     symbol = models.CharField('Symbol', max_length=5)
 
+    def __str__(self):
+        return f'{self.name} - {self.symbol}'
+
     class Meta:
         verbose_name = 'Currency'
         verbose_name_plural = 'Currencies'
@@ -99,6 +105,9 @@ class StockData(models.Model):
     gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=20)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, blank=True)
     reference = models.CharField('Reference', max_length=255)
+
+    def __str__(self):
+        return f'{self.company} @ {self.quarter}'
 
     class Meta:
         ordering = ['-timestamp']

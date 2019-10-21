@@ -3,11 +3,10 @@ import glob
 import os
 import zipfile
 
-import wget
 from django.conf import settings
-
 from django.core.management import BaseCommand
 
+import wget
 from StockWatch.main.models import Company
 
 PATH = 'data/'
@@ -33,7 +32,7 @@ class Command(BaseCommand):
             for i, (symbol, name, *args) in enumerate(reader):
                 if i == 0:
                     continue
-                if symbol not in current_companies:
+                if not (symbol in current_companies or symbol.endswith('_UADJ')):
                     companies.append(Company(name=name, symbol=symbol))
         Company.objects.bulk_create(companies)
         print(f'Created {len(companies)} new companies')

@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 import requests
-
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
@@ -57,8 +56,8 @@ def get_stock_data(date, symbol):
         if days == 7:
             dates = list(stocks_data.keys())
             raise ValidationError(
-                f"As we're only testing, you can only choose from the first 100 records." 
-                f"We have figures between {dates[-1]} - {dates[0]}",
+                f"As we're only testing, you can only choose from the first 100 records."
+                f"We have figures between {dates[-1]} - {dates[0]}"
             )
         days += 1
     return stock_data

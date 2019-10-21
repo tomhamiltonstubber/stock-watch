@@ -10,6 +10,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='base.jinja'), name='logout'),
     path('search/symbols/', views.search_company_symbols, name='symbol-search'),
     path('archive', views.archive, name='archive'),
-
     path('admin/', admin.site.urls),
 ]
