@@ -5,7 +5,7 @@ import pytest
 import responses
 from django.urls import reverse
 
-from StockWatch.factories import CompanyFactory
+from StockWatch.factories import CompanyFactory, StockDataFactory
 from StockWatch.main.models import Company, Firm, StockData, User
 
 
@@ -153,3 +153,10 @@ def test_eod_bad_response(auth_client):
     responses.add('GET', 'https://eodhistoricaldata.com/api/search/Auto/', json={}, status=500)
     r = auth_client.get(reverse('symbol-search'), {'q': 'Auto'})
     assert r.json() == []
+
+
+@pytest.mark.django_db
+def test_archive():
+    sd = StockDataFactory()
+
+

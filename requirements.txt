@@ -31,3 +31,4 @@ pytest-cov==2.7.1
 coverage==4.5.3
 codecov==2.0.15
 responses==0.10.6
+factory-boy==2.12.0
