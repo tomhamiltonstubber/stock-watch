@@ -1,4 +1,4 @@
-Django==2.2.4
+Django==2.2.6
 grablib[build]==0.7.4
 boto3==1.9.239
 dj-database-url==0.5.0
@@ -7,17 +7,17 @@ django-bootstrap3-datetimepicker-2==2.8.2
 django-jinja-bootstrap-form==4.2.3
 django-storages==1.7.1
 ipython==7.8.0
-psycopg2-binary==2.7.7
+psycopg2-binary==2.8.4
 pyinotify==0.9.6
 gunicorn==19.9.0
 whitenoise==4.1.4
-sentry-sdk==0.9.5
+sentry-sdk==0.13.0
 wget==3.2
 whitenoise==4.1.4
 
-django-debug-toolbar==1.11
+django-debug-toolbar==2.0
 flake8==3.7.8
-isort==4.3.20
+isort==4.3.21
 pycodestyle==2.5.0
 pyflakes==2.1.1
 black==19.3b0
