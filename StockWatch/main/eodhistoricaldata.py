@@ -14,7 +14,7 @@ class EodhdRequestError(Exception):
     pass
 
 
-def eod_hd_request(url, csv, **params):
+def eod_hd_request(url, csv_type, **params):
     url_params = {'api_token': settings.EOD_HD_API_KEY, **params}
     try:
         r = session.get(f'https://eodhistoricaldata.com/api/{url}', params=url_params)
@@ -22,7 +22,7 @@ def eod_hd_request(url, csv, **params):
     except HTTPError as e:
         raise EodhdRequestError('Problem accessing URL', e)
     logger.info('request to %s, params %r', url, params)
-    if csv:
+    if csv_type:
         reader = csv.reader(codecs.iterdecode(r.iter_lines(), 'utf-8'))
         lines = [l for l in reader]
         data = []
@@ -38,10 +38,10 @@ def eod_hd_request(url, csv, **params):
 
 def get_historical_data(date, symbol, market='LSE'):
     date = date.strftime('%Y-%m-%d')
-    data = eod_hd_request(f'eod/{symbol}.{market}/', csv=True, **{'from': date, 'to': date})
+    data = eod_hd_request(f'eod/{symbol}.{market}/', csv_type=True, **{'from': date, 'to': date})
     return data
 
 
 def symbol_search(query, market='LSE'):
-    data = eod_hd_request(f'search/{query}/', csv=False)
+    data = eod_hd_request(f'search/{query}/', csv_type=False)
     return [{'symbol': d['Code'], 'name': d['Name']} for d in data if d['Exchange'] == market]
