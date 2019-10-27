@@ -26,7 +26,7 @@ class Firm(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def _create_user(self, email, password, **extra_fields):
+    def _create_user(self, *, email, password, **extra_fields):
         """Create and save a User with the given email and password."""
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_user(self, email, firm, password, **extra_fields):
+    def create_user(self, email, password, firm, **extra_fields):
         return self._create_user(email=email, password=password, is_superuser=False, firm=firm, **extra_fields)
 
     def create_super_user(self, email, password, **extra_fields):

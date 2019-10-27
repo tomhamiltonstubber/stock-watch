@@ -1,4 +1,5 @@
 import datetime
+import json
 from decimal import Decimal
 
 import pytest
@@ -144,3 +145,24 @@ def test_decimal_error(auth_client, timeseries_example_bad):
         },
     )
     assert 'Something went wrong' in r.content.decode()
+
+
+@pytest.mark.django_db
+@responses.activate
+def test_company_search(auth_client, search_example):
+    responses.add(
+        'GET',
+        'https://eodhistoricaldata.com/api/search/Auto/',
+        body=json.dumps(search_example),
+        content_type='application/json',
+    )
+    r = auth_client.get(reverse('symbol-search'), {'q': 'Auto'})
+    assert r.json() == [{'symbol': 'AUTO', 'name': 'Auto Trader Inc'}]
+
+
+@pytest.mark.django_db
+@responses.activate
+def test_eod_bad_response(auth_client):
+    responses.add('GET', 'https://eodhistoricaldata.com/api/search/Auto/', json={}, status=500)
+    r = auth_client.get(reverse('symbol-search'), {'q': 'Auto'})
+    assert r.json() == []

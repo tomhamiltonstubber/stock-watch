@@ -26,3 +26,11 @@ def timeseries_example():
 @pytest.fixture()
 def timeseries_example_bad():
     return 'Date,Open,High,Low,Close,Adjusted_close,Volume\n2019-1-4,100,800,FOOBAR,500,500,3903565\n??'
+
+
+@pytest.fixture()
+def search_example():
+    return [
+        {'Code': 'AUTO', 'Exchange': 'LSE', 'Name': 'Auto Trader Inc', 'Country': 'UK', 'Currency': 'GBX'},
+        {'Code': 'AUTO', 'Exchange': 'US', 'Name': 'Auto Trader US', 'Country': 'US', 'Currency': 'USD'},
+    ]
