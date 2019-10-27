@@ -1,11 +1,11 @@
 import datetime
-import json
 from decimal import Decimal
 
 import pytest
 import responses
 from django.urls import reverse
 
+from StockWatch.factories import CompanyFactory
 from StockWatch.main.models import Company, Firm, StockData, User
 
 
@@ -51,8 +51,8 @@ def test_logout(auth_client):
 
 @pytest.mark.django_db
 @responses.activate
-def test_timeseries_options(auth_client, timeseries_example):
-    company = Company.objects.create(symbol='FOO', name='FooBar holdings')
+def test_timeseries_options(auth_client, timeseries_example, gb_currency):
+    company = CompanyFactory(symbol='FOO', name='FooBar holdings', currency=gb_currency)
     responses.add(
         'GET', 'https://eodhistoricaldata.com/api/eod/FOO.LSE/', body=timeseries_example, content_type='text/csv'
     )
@@ -81,8 +81,8 @@ def test_timeseries_options(auth_client, timeseries_example):
 
 @pytest.mark.django_db
 @responses.activate
-def test_timeseries_weekend(auth_client, timeseries_example):
-    company = Company.objects.create(symbol='FOO', name='FooBar holdings')
+def test_timeseries_weekend(auth_client, timeseries_example, gb_currency):
+    company = CompanyFactory(symbol='FOO', name='FooBar holdings', currency=gb_currency)
     responses.add(
         'GET', 'https://eodhistoricaldata.com/api/eod/FOO.LSE/', body=timeseries_example, content_type='text/csv'
     )
@@ -108,8 +108,8 @@ def test_timeseries_weekend(auth_client, timeseries_example):
 
 @pytest.mark.django_db
 @responses.activate
-def test_timeseries_no_data(auth_client):
-    company = Company.objects.create(symbol='FOO', name='FooBar holdings')
+def test_timeseries_no_data(auth_client, gb_currency):
+    company = CompanyFactory(symbol='FOO', name='FooBar holdings', currency=gb_currency)
     responses.add('GET', 'https://eodhistoricaldata.com/api/eod/FOO.LSE/', body='', content_type='text/csv')
     r = auth_client.post(
         reverse('search'),
@@ -127,8 +127,8 @@ def test_timeseries_no_data(auth_client):
 
 @pytest.mark.django_db
 @responses.activate
-def test_decimal_error(auth_client, timeseries_example_bad):
-    company = Company.objects.create(symbol='FOO', name='FooBar holdings')
+def test_decimal_error(auth_client, timeseries_example_bad, gb_currency):
+    company = CompanyFactory(symbol='FOO', name='FooBar holdings', currency=gb_currency)
     responses.add(
         'GET', 'https://eodhistoricaldata.com/api/eod/FOO.LSE/', body=timeseries_example_bad, content_type='text/csv'
     )

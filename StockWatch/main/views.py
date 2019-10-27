@@ -12,9 +12,8 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView, ListView
-from requests import HTTPError
 
-from StockWatch.main.eodhistoricaldata import get_historical_data, symbol_search
+from StockWatch.main.eodhistoricaldata import get_historical_data
 from StockWatch.main.forms import SearchStockForm
 from StockWatch.main.models import Company, Currency, StockData
 

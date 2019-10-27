@@ -34,3 +34,9 @@ def search_example():
         {'Code': 'AUTO', 'Exchange': 'LSE', 'Name': 'Auto Trader Inc', 'Country': 'UK', 'Currency': 'GBX'},
         {'Code': 'AUTO', 'Exchange': 'US', 'Name': 'Auto Trader US', 'Country': 'US', 'Currency': 'USD'},
     ]
+
+
+@pytest.fixture()
+def gb_currency():
+    currency, _ = Currency.objects.get_or_create(symbol='p', code='GBX', zero_currency=False, name='Pence Stirling')
+    return currency
