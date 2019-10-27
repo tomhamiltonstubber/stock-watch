@@ -39,5 +39,5 @@ def search_example():
 
 @pytest.fixture()
 def gb_currency():
-    currency, _ = Currency.objects.get_or_create(symbol='p', code='GBX', zero_currency=False, name='Pence Stirling')
+    currency, _ = Currency.objects.get_or_create(symbol='p', code='GBX', zero_currency=True, name='Pence Stirling')
     return currency

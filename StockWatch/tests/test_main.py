@@ -6,7 +6,7 @@ import responses
 from django.urls import reverse
 
 from StockWatch.factories import CompanyFactory, StockDataFactory
-from StockWatch.main.models import Company, Firm, StockData, User
+from StockWatch.main.models import Company, Firm, StockData, User, Currency
 
 
 def assert_redirects(r, url):
@@ -189,6 +189,16 @@ def test_archive_filter(auth_client, gb_currency):
     r = auth_client.get(reverse('archive') + '?ref=123ref')
     assert_contains(r, '123ref')
     assert_not_contains(r, '456ref')
+
+
+@pytest.mark.django_db
+def test_zero_decimal(auth_client, gb_currency):
+    another_currency = Currency.objects.create(code='XXX', symbol='£', name='GBP')
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref', company__name='company1')
+    StockDataFactory(currency=another_currency, user=auth_client.user, reference='456ref', company__name='company2')
+    r = auth_client.get('/')
+    assert_contains(r, '£250.00')
+    assert_contains(r, '250.00p')
 
 
 @pytest.mark.django_db
