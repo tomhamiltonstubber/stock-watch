@@ -30,3 +30,7 @@ install:
 .PHONY: install-all
 install-all: install
 	grablib
+
+.PHONY: deploy
+deploy:
+	python ./extras/deploy.py

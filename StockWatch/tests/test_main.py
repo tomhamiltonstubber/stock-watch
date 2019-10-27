@@ -6,7 +6,7 @@ import responses
 from django.urls import reverse
 
 from StockWatch.factories import CompanyFactory, StockDataFactory
-from StockWatch.main.models import Company, Firm, StockData, User, Currency
+from StockWatch.main.models import Company, Currency, Firm, StockData, User
 
 
 def assert_redirects(r, url):
@@ -15,10 +15,13 @@ def assert_redirects(r, url):
     assert response_url == url, 'Response redirected to wrong page: ' + response_url
 
 
-def assert_contains(r, s, status_code=200):
+def assert_contains(r, s, status_code=200, count=None):
     assert r.status_code == status_code
     content = r.content.decode()
-    assert s in content, content
+    if count:
+        assert content.count(s) == count, content
+    else:
+        assert s in content, content
 
 
 def assert_not_contains(r, s, status_code=200):
@@ -184,11 +187,11 @@ def test_archive_filter(auth_client, gb_currency):
 
     r = auth_client.get(reverse('archive'))
     assert_contains(r, '123ref')
-    assert_contains(r, '456ref')
+    assert_contains(r, '456ref', count=3)  # Twice in select dropdown
 
     r = auth_client.get(reverse('archive') + '?ref=123ref')
     assert_contains(r, '123ref')
-    assert_not_contains(r, '456ref')
+    assert_contains(r, '456ref', count=2)
 
 
 @pytest.mark.django_db

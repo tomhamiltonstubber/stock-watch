@@ -20,9 +20,9 @@ class Command(BaseCommand):
                     continue
                 new_currencies.append(Currency(code=code, name=name, symbol=symbol))
         if 'GBX' not in current_currencies:
-            new_currencies.append(Currency(code='GBX', name='Pence Stirling', symbol='p'))
+            new_currencies.append(Currency(code='GBX', name='Pence Stirling', symbol='p', zero_currency=True))
         if 'USX' not in current_currencies:
-            new_currencies.append(Currency(code='USX', name='US cents', symbol='c'))
+            new_currencies.append(Currency(code='USX', name='US cents', symbol='c', zero_currency=True))
         Currency.objects.bulk_create(new_currencies)
         print(f'Created {len(new_currencies)} new currencies')
         print(f'Database currently has {len(current_currencies) + len(new_currencies)} currencies')
