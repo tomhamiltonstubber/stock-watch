@@ -36,8 +36,3 @@ def get_historical_data(date, symbol, market='LSE'):
     date = date.strftime('%Y-%m-%d')
     data = eod_hd_request(f'eod/{symbol}.{market}/', csv_type=True, **{'from': date, 'to': date})
     return data
-
-
-def symbol_search(query, market='LSE'):
-    data = eod_hd_request(f'search/{query}/', csv_type=False)
-    return [{'symbol': d['Code'], 'name': d['Name']} for d in data if d['Exchange'] == market]
