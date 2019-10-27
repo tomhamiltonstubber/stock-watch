@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import SuspiciousOperation
 from django.dispatch import receiver
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -113,7 +113,7 @@ class Archive(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().request_qs(self.request).select_related('currency')
-        ref = self.request.GET.get('reference')
+        ref = self.request.GET.get('ref')
         if ref:
             qs = qs.filter(reference=ref)
         return qs
@@ -121,7 +121,7 @@ class Archive(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         ref_choices = [ref for ref in self.get_queryset().values_list('reference', flat=True)]
         return super().get_context_data(
-            title=self.title, ref_choices=ref_choices, current_ref=self.request.GET.get('reference'), **kwargs
+            title=self.title, ref_choices=ref_choices, current_ref=self.request.GET.get('ref', ''), **kwargs
         )
 
 
@@ -149,7 +149,7 @@ def archive_export(request):
                 sd.quarter,
                 sd.quantity,
                 sd.gross_value,
-                sd.currency.code
+                sd.currency.code,
             ]
         )
     return r

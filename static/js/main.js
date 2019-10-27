@@ -7,7 +7,7 @@ $(document).ready(() => {
   if ($('#id_reference').length) {
     $('#id_reference').change(function () {
       const $this = $(this)
-      window.location = window.url + '?reference=' + $this.val()
+      window.location = window.url + '?ref=' + $this.val()
     })
   }
 })

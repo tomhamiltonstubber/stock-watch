@@ -175,3 +175,36 @@ def test_archive(auth_client, gb_currency):
     r = auth_client.get(reverse('archive'))
     assert_contains(r, '123ref')
     assert_not_contains(r, '456ref')
+
+
+@pytest.mark.django_db
+def test_archive_filter(auth_client, gb_currency):
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref', company__name='company1')
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='456ref', company__name='company2')
+
+    r = auth_client.get(reverse('archive'))
+    assert_contains(r, '123ref')
+    assert_contains(r, '456ref')
+
+    r = auth_client.get(reverse('archive') + '?ref=123ref')
+    assert_contains(r, '123ref')
+    assert_not_contains(r, '456ref')
+
+
+@pytest.mark.django_db
+def test_archive_export(auth_client, gb_currency):
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref', company__name='company1')
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='456ref', company__name='company2')
+
+    r = auth_client.post(reverse('archive-export'))
+    assert r.content.decode() == (
+        'Reference,Company,Date,High,Low,Quarter,Amount,Gross Value,currency\r\n'
+        '456ref,company2,2014-01-01,400.000000,200.000000,250.000000,1,250.000000,GBX\r\n'
+        '123ref,company1,2014-01-01,400.000000,200.000000,250.000000,1,250.000000,GBX\r\n'
+    )
+
+    r = auth_client.post(reverse('archive-export') + '?ref=123ref')
+    assert r.content.decode() == (
+        'Reference,Company,Date,High,Low,Quarter,Amount,Gross Value,currency\r\n'
+        '123ref,company1,2014-01-01,400.000000,200.000000,250.000000,1,250.000000,GBX\r\n'
+    )

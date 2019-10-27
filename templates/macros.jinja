@@ -44,11 +44,11 @@
         <tr>
           <td>{{ sd.company }}</td>
           <td>{{ sd.date.strftime('%d/%m/%Y') }}</td>
-          <td>{{ sd.currency.symbol }}{{ sd.high|round(3) }}</td>
-          <td>{{ sd.currency.symbol }}{{ sd.low|round(3) }}</td>
-          <td>{{ sd.currency.symbol }}{{ sd.quarter|round(3) }}</td>
+          <td>{{ sd.format(sd.high|round(3)) }}</td>
+          <td>{{ sd.format(sd.low|round(3)) }}</td>
+          <td>{{ sd.format(sd.quarter|round(3)) }}</td>
           <td>{{ sd.quantity }}</td>
-          <td>{{ sd.currency.symbol }}{{ sd.gross_value|round(2) }}</td>
+          <td>{{ sd.format(sd.gross_value|round(2)) }}</td>
           <td>{{ sd.reference }}</td>
         </tr>
       {% endfor %}
