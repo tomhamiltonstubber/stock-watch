@@ -15,6 +15,18 @@ def assert_redirects(r, url):
     assert response_url == url, 'Response redirected to wrong page: ' + response_url
 
 
+def assert_contains(r, s, status_code=200):
+    assert r.status_code == status_code
+    content = r.content.decode()
+    assert s in content, content
+
+
+def assert_not_contains(r, s, status_code=200):
+    assert r.status_code == status_code
+    content = r.content.decode()
+    assert s not in content, content
+
+
 @pytest.mark.django_db
 def test_redirect_not_authed(client):
     User.objects.create_user(
@@ -156,7 +168,10 @@ def test_eod_bad_response(auth_client):
 
 
 @pytest.mark.django_db
-def test_archive():
-    sd = StockDataFactory()
+def test_archive(auth_client, gb_currency):
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref')
+    StockDataFactory(currency=gb_currency, reference='456ref')
 
-
+    r = auth_client.get(reverse('archive'))
+    assert_contains(r, '123ref')
+    assert_not_contains(r, '456ref')

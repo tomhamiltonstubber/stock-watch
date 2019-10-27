@@ -151,3 +151,12 @@ $help-topic-color: $primary-color;
 #id_quantity {
   width: 150px;
 }
+
+.select2-selection__clear {
+  margin: 7px 2px 0 0!important;
+  padding-left: 4px!important;
+  color: #777!important;
+  background-color: transparent!important;
+  font-size: 18px!important;
+  font-weight: 700!important;
+}

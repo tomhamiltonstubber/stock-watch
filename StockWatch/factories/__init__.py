@@ -1,3 +1,6 @@
+import datetime
+import decimal
+
 import factory
 from factory import DjangoModelFactory
 
@@ -26,7 +29,7 @@ class UserFactory(DjangoModelFactory):
 
     password = 'testing'
     firm = factory.SubFactory(FirmFactory)
-    last_name = factory.Sequence(lambda n: 'last_namé_%d' % n)
+    last_name = factory.Sequence(lambda n: 'last_name_%d' % n)
 
     @factory.LazyAttribute
     def email(self):
@@ -46,13 +49,11 @@ class StockDataFactory(DjangoModelFactory):
         model = StockData
 
     user = factory.SubFactory(UserFactory)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='stock_data')
-    date = models.DateField('Date')
-    high = models.DecimalField("Day's high", decimal_places=6, max_digits=20)
-    low = models.DecimalField("Day's low", decimal_places=6, max_digits=20)
-    quarter = models.DecimalField("Day's quarter", decimal_places=6, max_digits=20)
-    timestamp = models.DateTimeField('Date searched', auto_now_add=True)
-    quantity = models.PositiveIntegerField('Volume')
-    gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=20)
-    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, blank=True)
-    reference = models.CharField('Reference', max_length=255)
+    company = factory.SubFactory(CompanyFactory, currency=factory.SelfAttribute('..currency'))
+    date = datetime.datetime(2014, 1, 1, tzinfo=datetime.timezone.utc)
+    high = 400
+    low = 200
+    quarter = low + ((high - low) * decimal.Decimal(0.25))
+    quantity = 1
+    gross_value = quarter * quantity
+    reference = factory.Sequence(lambda n: 'Ref %d' % n)

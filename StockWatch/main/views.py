@@ -15,7 +15,7 @@ from django.views.generic import FormView, ListView
 
 from StockWatch.main.eodhistoricaldata import get_historical_data
 from StockWatch.main.forms import SearchStockForm
-from StockWatch.main.models import Company, Currency, StockData
+from StockWatch.main.models import Company, StockData
 
 tc_logger = logging.getLogger('SW')
 
@@ -91,8 +91,8 @@ class Search(FormView):
             messages.error(self.request, 'Something went wrong there. Please try again.')
             return self.form_invalid(form)
         # TODO: Support different currencies
-        obj.currency, _ = Currency.objects.get_or_create(name='Great British Pound', symbol='£', code='GBP')
         obj.company = cd['company']
+        obj.currency = obj.company.currency
         obj.high = high
         obj.low = low
         obj.quarter = quarter
@@ -110,10 +110,17 @@ class Archive(ListView):
     title = 'Previous Searches'
 
     def get_queryset(self):
-        return super().get_queryset().request_qs(self.request).select_related('currency')
+        qs = super().get_queryset().request_qs(self.request).select_related('currency')
+        ref = self.request.GET.get('reference')
+        if ref:
+            qs = qs.filter(reference=ref)
+        return qs
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        return super().get_context_data(title=self.title)
+        ref_choices = [ref for ref in self.get_queryset().values_list('reference', flat=True)]
+        return super().get_context_data(
+            title=self.title, ref_choices=ref_choices, current_ref=self.request.GET.get('reference'), **kwargs
+        )
 
 
 archive = Archive.as_view()

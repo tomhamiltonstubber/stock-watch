@@ -12,6 +12,7 @@ def auth_client(client):
         password='testing',
         firm=Firm.objects.create(name='123 Firm Ltd'),
     )
+    client.user = user
     logged_in = client.login(username=user.email, password='testing')
     assert logged_in, 'Not logged in'
     Currency.objects.create(code='GBP', name='Great British Pound', symbol='£')
