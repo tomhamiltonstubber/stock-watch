@@ -119,7 +119,7 @@ class Archive(ListView):
         return qs
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        ref_choices = [ref for ref in self.get_queryset().values_list('reference', flat=True)]
+        ref_choices = {ref for ref in StockData.objects.request_qs(self.request).values_list('reference', flat=True)}
         return super().get_context_data(
             title=self.title, ref_choices=ref_choices, current_ref=self.request.GET.get('ref', ''), **kwargs
         )

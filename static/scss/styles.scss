@@ -82,42 +82,6 @@ $help-topic-color: $primary-color;
   display: none;
 }
 
-.tag {
-  background-color: $help-topic-color;
-  display: inline-block;
-  padding: .25em .4em;
-  font-size: 73%;
-  font-weight: bold;
-  color: white;
-  border-radius: .25rem;
-  @media (max-width: $small) {
-    display: none;
-  }
-}
-
-#spinner {
-  display: none;
-  position: relative;
-  top: -20px;
-  left: calc(100% - 30px);
-  $size: 6px;
-  width: ($size + $size / 3 * 2) * 2;
-  height: $size;
-  > div {
-    width: $size;
-    height: $size;
-    margin: 0 $size / 3;
-    background-color: $help-topic-color;
-    border-radius: 50%;
-    border: 0;
-    display: inline-block;
-    vertical-align: top;
-  }
-  transform-origin: center center;
-  will-change: transform;
-  animation: rotation 3s infinite ease;
-}
-
 #login-block {
   margin-top: 100px;
   width: 100%;
@@ -159,4 +123,10 @@ $help-topic-color: $primary-color;
   background-color: transparent!important;
   font-size: 18px!important;
   font-weight: 700!important;
+}
+
+tr.gap {
+  height: 10px;
+  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
 }

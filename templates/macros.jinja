@@ -29,6 +29,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <td>Reference</td>
         <td>Company</td>
         <td>Date</td>
         <td>High</td>
@@ -36,12 +37,17 @@
         <td>Quarter</td>
         <td>Quantity</td>
         <td>Gross Value</td>
-        <td>Reference</td>
       </tr>
     </thead>
     <tbody>
+      {% set previous_ref = stock_datas[0].reference %} {# set ref to Ref 5 #}
       {% for sd in stock_datas %}
+        {% if previous_ref != sd.reference %}
+          <tr class="gap"><td colspan="8"></td></tr>
+        {% endif %}
+        {% set previous_ref = sd.reference %}
         <tr>
+          <td>{{ sd.reference }}</td>
           <td>{{ sd.company }}</td>
           <td>{{ sd.date.strftime('%d/%m/%Y') }}</td>
           <td>{{ sd.format(sd.high|round(3)) }}</td>
@@ -49,7 +55,6 @@
           <td>{{ sd.format(sd.quarter|round(3)) }}</td>
           <td>{{ sd.quantity }}</td>
           <td>{{ sd.format(sd.gross_value|round(2)) }}</td>
-          <td>{{ sd.reference }}</td>
         </tr>
       {% endfor %}
     </tbody>
