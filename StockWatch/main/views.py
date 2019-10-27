@@ -15,7 +15,7 @@ from django.views.generic import FormView, ListView
 
 from StockWatch.main.eodhistoricaldata import get_historical_data, symbol_search
 from StockWatch.main.forms import SearchStockForm
-from StockWatch.main.models import Company, Currency, StockData
+from StockWatch.main.models import Currency, StockData
 
 tc_logger = logging.getLogger('SW')
 

@@ -21,6 +21,7 @@ isort==4.3.20
 pycodestyle==2.5.0
 pyflakes==2.1.1
 black==19.3b0
+devtools==0.5.1
 
 pytest==5.0.0
 pytest-django==3.5.1
