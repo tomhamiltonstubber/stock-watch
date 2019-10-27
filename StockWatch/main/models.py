@@ -11,6 +11,8 @@ class Company(models.Model):
 
     name = models.CharField('Name', max_length=255)
     symbol = models.CharField('Symbol', max_length=50, unique=True)
+    currency = models.ForeignKey('main.Currency', on_delete=models.CASCADE)
+    country = models.CharField('Country', max_length=2)
 
     def __str__(self):
         return f'{self.name} ({self.symbol})'
@@ -75,6 +77,7 @@ class Currency(models.Model):
     name = models.CharField('Name', max_length=255, unique=True)
     code = models.CharField('Code', max_length=3, unique=True)
     symbol = models.CharField('Symbol', max_length=5)
+    zero_currency = models.BooleanField('Is zero decimal currency', default=False)
 
     def __str__(self):
         return f'{self.name} - {self.symbol}'
