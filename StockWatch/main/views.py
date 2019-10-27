@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView, ListView
 
-from StockWatch.main.eodhistoricaldata import get_historical_data
+from StockWatch.main.eodhistoricaldata import get_historical_data, symbol_search
 from StockWatch.main.forms import SearchStockForm
 from StockWatch.main.models import Company, Currency, StockData
 
@@ -46,9 +46,7 @@ def search_company_symbols(request):
     q = request.GET.get('q')
     if not q:
         raise SuspiciousOperation('No query to search')
-    company_qs = Company.objects.filter(name__icontains=q)
-    data = [{'id': id, 'text': name.strip(' ')} for id, name in company_qs.values_list('id', 'name')]
-    return JsonResponse(data, safe=False)
+    return JsonResponse(symbol_search(q), safe=False)
 
 
 class Search(FormView):
