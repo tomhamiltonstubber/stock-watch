@@ -2,7 +2,7 @@ import datetime
 import decimal
 
 import factory
-from factory import DjangoModelFactory
+from factory import DjangoModelFactory, fuzzy
 
 from StockWatch.main.models import Company, Firm, StockData, User
 
@@ -13,7 +13,7 @@ class CompanyFactory(DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'Company %d' % n)
     symbol = factory.Sequence(lambda n: 'CO%d' % n)
-    country = factory.Sequence(lambda n: 'X%d' % n)
+    country = fuzzy.FuzzyText(length=2)
 
 
 class FirmFactory(DjangoModelFactory):
