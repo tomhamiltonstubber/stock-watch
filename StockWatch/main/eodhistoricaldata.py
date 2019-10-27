@@ -4,7 +4,6 @@ import logging
 
 import requests
 from django.conf import settings
-from requests import HTTPError
 
 session = requests.Session()
 logger = logging.getLogger('eodhistorical')
@@ -16,11 +15,8 @@ class EodhdRequestError(Exception):
 
 def eod_hd_request(url, csv_type, **params):
     url_params = {'api_token': settings.EOD_HD_API_KEY, **params}
-    try:
-        r = session.get(f'https://eodhistoricaldata.com/api/{url}', params=url_params)
-        r.raise_for_status()
-    except HTTPError as e:
-        raise EodhdRequestError('Problem accessing URL', e)
+    r = session.get(f'https://eodhistoricaldata.com/api/{url}', params=url_params)
+    r.raise_for_status()
     logger.info('request to %s, params %r', url, params)
     if csv_type:
         reader = csv.reader(codecs.iterdecode(r.iter_lines(), 'utf-8'))

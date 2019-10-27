@@ -12,6 +12,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView, ListView
+from requests import HTTPError
 
 from StockWatch.main.eodhistoricaldata import get_historical_data, symbol_search
 from StockWatch.main.forms import SearchStockForm
@@ -46,7 +47,12 @@ def search_company_symbols(request):
     q = request.GET.get('q')
     if not q:
         raise SuspiciousOperation('No query to search')
-    return JsonResponse(symbol_search(q), safe=False)
+    try:
+        data = symbol_search(q)
+    except HTTPError as e:
+        data = []
+        tc_logger.exception('Error accessing URL: %r', e)
+    return JsonResponse(data, safe=False)
 
 
 class Search(FormView):
