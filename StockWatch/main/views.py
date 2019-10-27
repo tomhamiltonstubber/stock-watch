@@ -1,3 +1,4 @@
+import csv
 import decimal
 import logging
 
@@ -7,15 +8,16 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import SuspiciousOperation
 from django.dispatch import receiver
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django.views.generic import FormView, ListView
 
 from StockWatch.main.eodhistoricaldata import get_historical_data
 from StockWatch.main.forms import SearchStockForm
-from StockWatch.main.models import Company, Currency, StockData
+from StockWatch.main.models import Company, StockData
 
 tc_logger = logging.getLogger('SW')
 
@@ -91,8 +93,8 @@ class Search(FormView):
             messages.error(self.request, 'Something went wrong there. Please try again.')
             return self.form_invalid(form)
         # TODO: Support different currencies
-        obj.currency, _ = Currency.objects.get_or_create(name='Great British Pound', symbol='£', code='GBP')
         obj.company = cd['company']
+        obj.currency = obj.company.currency
         obj.high = high
         obj.low = low
         obj.quarter = quarter
@@ -110,10 +112,44 @@ class Archive(ListView):
     title = 'Previous Searches'
 
     def get_queryset(self):
-        return super().get_queryset().request_qs(self.request).select_related('currency')
+        qs = super().get_queryset().request_qs(self.request).select_related('currency')
+        ref = self.request.GET.get('ref')
+        if ref:
+            qs = qs.filter(reference=ref)
+        return qs
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        return super().get_context_data(title=self.title)
+        ref_choices = [ref for ref in self.get_queryset().values_list('reference', flat=True)]
+        return super().get_context_data(
+            title=self.title, ref_choices=ref_choices, current_ref=self.request.GET.get('ref', ''), **kwargs
+        )
 
 
 archive = Archive.as_view()
+
+
+@require_POST
+def archive_export(request):
+    sd_qs = StockData.objects.request_qs(request).select_related('currency', 'company')
+    reference = request.GET.get('ref')
+    if reference:
+        sd_qs = sd_qs.filter(reference=reference)
+    r = HttpResponse(content_type='text/csv')
+    r['Content-Disposition'] = 'attachment; filename="export.csv"'
+    writer = csv.writer(r)
+    writer.writerow(['Reference', 'Company', 'Date', 'High', 'Low', 'Quarter', 'Amount', 'Gross Value', 'currency'])
+    for sd in sd_qs:
+        writer.writerow(
+            [
+                sd.reference,
+                sd.company.name,
+                sd.date,
+                sd.high,
+                sd.low,
+                sd.quarter,
+                sd.quantity,
+                sd.gross_value,
+                sd.currency.code,
+            ]
+        )
+    return r

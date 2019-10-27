@@ -100,14 +100,19 @@ class StockData(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='stock_data')
     date = models.DateField('Date')
-    high = models.DecimalField("Day's high", decimal_places=6, max_digits=20)
-    low = models.DecimalField("Day's low", decimal_places=6, max_digits=20)
-    quarter = models.DecimalField("Day's quarter", decimal_places=6, max_digits=20)
+    high = models.DecimalField("Day's high", decimal_places=3, max_digits=20)
+    low = models.DecimalField("Day's low", decimal_places=3, max_digits=20)
+    quarter = models.DecimalField("Day's quarter", decimal_places=3, max_digits=20)
     timestamp = models.DateTimeField('Date searched', auto_now_add=True)
-    quantity = models.PositiveIntegerField('Volume')
-    gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=20)
+    quantity = models.PositiveIntegerField('Quantity')
+    gross_value = models.DecimalField('Gross Value', decimal_places=3, max_digits=20)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, blank=True)
     reference = models.CharField('Reference', max_length=255)
+
+    def format(self, amount):
+        if self.currency.zero_currency:
+            return f'{amount}{self.currency.symbol}'
+        return f'{self.currency.symbol}{amount}'
 
     def __str__(self):
         return f'{self.company} @ {self.quarter}'

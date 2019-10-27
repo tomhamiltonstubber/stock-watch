@@ -2,6 +2,14 @@ $(document).ready(() => {
   init_confirm_follow()
   init_dtps()
   render_search()
+  render_selects()
+
+  if ($('#id_reference').length) {
+    $('#id_reference').change(function () {
+      const $this = $(this)
+      window.location = window.url + '?ref=' + $this.val()
+    })
+  }
 })
 
 const init_dtps = () => {
@@ -36,7 +44,6 @@ const init_dtps = () => {
     }
   })
 }
-
 
 const render_search = () => {
   const $search = $('#id_company')
@@ -73,6 +80,19 @@ const render_search = () => {
   })
 }
 
+const render_selects = () => {
+  const selects = $('select').not('.select2-offscreen').attr('autocomplete', 'off').not('.select2-heavy')
+  selects.each((i, el) => {
+    const $el = $(el)
+    $el.val(el.dataset.initial)
+    $el.select2({
+      placeholder: $el.attr('placeholder'),
+      allowClear: true,
+      theme: 'bootstrap4',
+      width: '300',
+    })
+  })
+}
 
 const init_confirm_follow = () => {
   const $el = $(document)

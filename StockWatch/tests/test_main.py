@@ -5,14 +5,26 @@ import pytest
 import responses
 from django.urls import reverse
 
-from StockWatch.factories import CompanyFactory
-from StockWatch.main.models import Company, Firm, StockData, User
+from StockWatch.factories import CompanyFactory, StockDataFactory
+from StockWatch.main.models import Company, Firm, StockData, User, Currency
 
 
 def assert_redirects(r, url):
     assert hasattr(r, 'redirect_chain'), 'Response was not a redirect. Did you use follow=True?'
     response_url, _ = r.redirect_chain[0]
     assert response_url == url, 'Response redirected to wrong page: ' + response_url
+
+
+def assert_contains(r, s, status_code=200):
+    assert r.status_code == status_code
+    content = r.content.decode()
+    assert s in content, content
+
+
+def assert_not_contains(r, s, status_code=200):
+    assert r.status_code == status_code
+    content = r.content.decode()
+    assert s not in content, content
 
 
 @pytest.mark.django_db
@@ -153,3 +165,56 @@ def test_eod_bad_response(auth_client):
     responses.add('GET', 'https://eodhistoricaldata.com/api/search/Auto/', json={}, status=500)
     r = auth_client.get(reverse('symbol-search'), {'q': 'Auto'})
     assert r.json() == []
+
+
+@pytest.mark.django_db
+def test_archive(auth_client, gb_currency):
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref')
+    StockDataFactory(currency=gb_currency, reference='456ref')
+
+    r = auth_client.get(reverse('archive'))
+    assert_contains(r, '123ref')
+    assert_not_contains(r, '456ref')
+
+
+@pytest.mark.django_db
+def test_archive_filter(auth_client, gb_currency):
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref', company__name='company1')
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='456ref', company__name='company2')
+
+    r = auth_client.get(reverse('archive'))
+    assert_contains(r, '123ref')
+    assert_contains(r, '456ref')
+
+    r = auth_client.get(reverse('archive') + '?ref=123ref')
+    assert_contains(r, '123ref')
+    assert_not_contains(r, '456ref')
+
+
+@pytest.mark.django_db
+def test_zero_decimal(auth_client, gb_currency):
+    another_currency = Currency.objects.create(code='XXX', symbol='£', name='GBP')
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref', company__name='company1')
+    StockDataFactory(currency=another_currency, user=auth_client.user, reference='456ref', company__name='company2')
+    r = auth_client.get('/')
+    assert_contains(r, '£250.00')
+    assert_contains(r, '250.00p')
+
+
+@pytest.mark.django_db
+def test_archive_export(auth_client, gb_currency):
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='123ref', company__name='company1')
+    StockDataFactory(currency=gb_currency, user=auth_client.user, reference='456ref', company__name='company2')
+
+    r = auth_client.post(reverse('archive-export'))
+    assert r.content.decode() == (
+        'Reference,Company,Date,High,Low,Quarter,Amount,Gross Value,currency\r\n'
+        '456ref,company2,2014-01-01,400.000000,200.000000,250.000000,1,250.000000,GBX\r\n'
+        '123ref,company1,2014-01-01,400.000000,200.000000,250.000000,1,250.000000,GBX\r\n'
+    )
+
+    r = auth_client.post(reverse('archive-export') + '?ref=123ref')
+    assert r.content.decode() == (
+        'Reference,Company,Date,High,Low,Quarter,Amount,Gross Value,currency\r\n'
+        '123ref,company1,2014-01-01,400.000000,200.000000,250.000000,1,250.000000,GBX\r\n'
+    )

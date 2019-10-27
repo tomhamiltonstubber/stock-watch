@@ -6,7 +6,7 @@
       <form method="post" class="form-inline" id="search-form" enctype="multipart/form-data" autocomplete="off">
         {% csrf_token %}
         <div class="form-group search">
-          <select class=" form-control" required="" id="id_company" name="company"></select>
+          <select class="select2-heavy form-control" required="" id="id_company" name="company"></select>
         </div>
         {{ form.date }}
         {{ form.quantity | bootstrap }}
