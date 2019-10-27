@@ -11,6 +11,9 @@
               <option value="{{ ref }}">{{ ref }}</option>
             {% endfor %}
           </select>
+          <a class="btn btn-primary" data-method="POST" download href="{{ url('archive-export') }}?ref={{ current_ref }}">
+            Export to CSV
+          </a>
         </div>
       </div>
     </div>

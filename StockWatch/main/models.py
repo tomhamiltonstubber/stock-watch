@@ -104,7 +104,7 @@ class StockData(models.Model):
     low = models.DecimalField("Day's low", decimal_places=6, max_digits=20)
     quarter = models.DecimalField("Day's quarter", decimal_places=6, max_digits=20)
     timestamp = models.DateTimeField('Date searched', auto_now_add=True)
-    quantity = models.PositiveIntegerField('Volume')
+    quantity = models.PositiveIntegerField('Quantity')
     gross_value = models.DecimalField('Gross Value', decimal_places=6, max_digits=20)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, blank=True)
     reference = models.CharField('Reference', max_length=255)
