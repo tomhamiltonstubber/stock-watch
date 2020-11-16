@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'StockWatch.staticfiles',
     'django.contrib.staticfiles',
     'django_jinja',
     'django_extensions',
