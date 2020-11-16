@@ -17,7 +17,7 @@ download:
   'CDNJS/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.css': 'css/dtp.css'
 
   'GITHUB/moment/moment/2.24.0/min/moment.min.js': 'js/moment.js'
-  'CDNJS/bootbox.js/4.4.0/bootbox.js': 'js/bootbox.js'
+  'CDNJS/bootbox.js/5.4.1/bootbox.min.js': 'js/bootbox.js'
 
   'GITHUB/select2/select2/4.0.7/dist/js/select2.full.js': 'js/'
   'GITHUB/select2/select2/4.0.7/dist/css/select2.css': 'css/'

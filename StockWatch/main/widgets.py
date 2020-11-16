@@ -25,7 +25,7 @@ class DatePicker(widgets.DateInput):
             'data-sideBySide': True,
             'data-yesterday': (now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'),
         }
-        formats = ['%d/%m/%Y']
+        formats = ['%d/%m/%Y', '%Y-%m-%d']
         self._is_datetime = True
         super().__init__(attrs, self.format)
         field.input_formats = formats

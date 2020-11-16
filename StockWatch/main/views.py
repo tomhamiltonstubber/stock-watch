@@ -1,6 +1,7 @@
 import csv
 import decimal
 import logging
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import user_logged_in
@@ -12,11 +13,12 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import FormView, ListView
 
-from StockWatch.main.eodhistoricaldata import get_historical_data
-from StockWatch.main.forms import SearchStockForm
+from StockWatch.main.eodhistoricaldata import eod_historical_data
+from StockWatch.main.forms import SearchStockForm, SearchStockValidation
 from StockWatch.main.models import Company, StockData
 
 tc_logger = logging.getLogger('SW')
@@ -53,6 +55,29 @@ def search_company_symbols(request):
     return JsonResponse(data, safe=False)
 
 
+@require_POST
+@csrf_exempt
+def get_historical_price(request):
+    form = SearchStockValidation(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        date = cd['date']
+        if date.weekday() in {5, 6}:
+            if date.weekday() == 5:  # Sat
+                date_from = date - timedelta(days=1)
+                date_to = date + timedelta(days=3)
+            else:  # Date entered is Sunday
+                date_from = date - timedelta(days=2)
+                date_to = date + timedelta(days=1)
+        else:
+            date_from = date
+            date_to = date
+        data = eod_historical_data(symbol=cd['company'].symbol, date_to=date_to, date_from=date_from)
+        return JsonResponse(data, safe=False)
+    else:
+        return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
 class Search(FormView):
     template_name = 'search.jinja'
     form_class = SearchStockForm
@@ -67,28 +92,21 @@ class Search(FormView):
         ctx = super().get_context_data(
             stock_datas=StockData.objects.request_qs(self.request).select_related('currency')[:10],
             title=self.title,
-            symbol_search_url=reverse('symbol-search'),
             **kwargs,
         )
         return ctx
 
     def form_valid(self, form):
         cd = form.cleaned_data
-        stock_data = get_historical_data(form.cleaned_data['date'], cd['company'].symbol)
-        if not stock_data:
-            form.add_error('__all__', 'No stock data for that day')
-            return self.form_invalid(form)
-        stock_data = stock_data[0]
         obj = form.save(commit=False)
-
         try:
-            high = decimal.Decimal(stock_data['High'])
-            low = decimal.Decimal(stock_data['Low'])
+            high = decimal.Decimal(cd['high'])
+            low = decimal.Decimal(cd['low'])
             quarter = low + ((high - low) * decimal.Decimal(0.25))
             obj.gross_value = round(quarter * cd['quantity'], 2)
         except decimal.InvalidOperation as e:
             tc_logger.exception(
-                'DecimalError caused. %s', e, extra={'stock_data': stock_data, 'form_data': form.cleaned_data}
+                'DecimalError caused. %s', e, extra={'stock_data': cd, 'form_data': form.cleaned_data}
             )
             messages.error(self.request, 'Something went wrong there. Please try again.')
             return self.form_invalid(form)

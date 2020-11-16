@@ -2,7 +2,8 @@ import datetime
 import decimal
 
 import factory
-from factory import DjangoModelFactory, fuzzy
+from factory import fuzzy
+from factory.django import DjangoModelFactory
 
 from StockWatch.main.models import Company, Firm, StockData, User
 

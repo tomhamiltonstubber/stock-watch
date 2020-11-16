@@ -4,7 +4,7 @@ $(document).ready(() => {
   render_search()
   render_selects()
 
-  if ($('#id_reference').length) {
+  if (window.url === '/archive') {
     $('#id_reference').change(function () {
       const $this = $(this)
       window.location = window.url + '?ref=' + $this.val()
@@ -72,11 +72,51 @@ const render_search = () => {
       },
       cache: true
     },
-    minimumInputLength: 3,
+    minimumInputLength: 2,
     allowClear: false,
     placeholder: 'Click to select a company',
     theme: 'bootstrap4',
     width: '100%',
+  })
+  $('#search-btn').click(function (e) {
+    e.preventDefault()
+    $.post(window.price_url, {company: $('#id_company').val(), date: $('#id_date').val()})
+      .done((data) => {
+        if (data.length === 1) {
+          data = data[0]
+          $('#id_high').val(data['High'])
+          $('#id_low').val(data['Low'])
+          $('#search-form').submit()
+        } else {
+          bootbox.prompt({
+            title: 'Choose a value',
+            message: "<p>You've selected a day on the weekend, so you have the choice of taking Friday or Monday's pricing:</p>",
+            inputType: 'radio',
+            inputOptions: [
+              {
+                  text: `Friday ${data[0]['Date']}: ${data[0]['Low']} - ${data[0]['High']}`,
+                  value: 0,
+              },
+              {
+                  text: `Monday ${data[1]['Date']}: ${data[1]['Low']} - ${data[1]['High']}`,
+                  value: 1,
+              },
+            ],
+            callback: function (result) {
+              if (result) {
+                $('#id_high').val(data[result]['High'])
+                $('#id_low').val(data[result]['Low'])
+                $('#search-form').submit()
+              }
+            }
+          })
+        }
+      })
+      .fail(function (xhr, text, error) {
+        console.log(xhr)
+        console.log(text)
+        console.log(error)
+      })
   })
 }
 

@@ -32,7 +32,9 @@ def eod_hd_request(url, csv_type, **params):
         return r.json()
 
 
-def get_historical_data(date, symbol, market='LSE'):
-    date = date.strftime('%Y-%m-%d')
-    data = eod_hd_request(f'eod/{symbol}.{market}/', csv_type=True, **{'from': date, 'to': date})
-    return data
+def eod_historical_data(date_from, date_to, symbol, market='LSE'):
+    return eod_hd_request(
+        f'eod/{symbol}.{market}/',
+        csv_type=True,
+        **{'from': date_from.strftime('%Y-%m-%d'), 'to': date_to.strftime('%Y-%m-%d')}
+    )

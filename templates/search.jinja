@@ -3,7 +3,7 @@
 {% block content %}
   <div class="row justify-content-right pb-5 pt-5 pull-right">
     <div class="col-md-12">
-      <form method="post" class="form-inline" id="search-form" enctype="multipart/form-data" autocomplete="off">
+      <form method="post" action="{{ request.path }}" class="form-inline" id="search-form" enctype="multipart/form-data" autocomplete="off">
         {% csrf_token %}
         <div class="form-group search">
           <select class="select2-heavy form-control" required="" id="id_company" name="company"></select>
@@ -12,12 +12,14 @@
         {{ form.quantity | bootstrap }}
         {{ form.reference | bootstrap }}
         {{ form.errors.as_text() }}
-        <button class="btn btn-primary" type="submit"><span class="fa fa-search"></span> Search</button>
+        {{ form.high }}{{ form.low }}
+        <button class="btn btn-primary" id="search-btn"><span class="fa fa-search"></span> Search</button>
       </form>
     </div>
   </div>
   {{ display.render_stock_data(stock_datas) }}
   <script>
-    window.symbol_search_url = '{{ symbol_search_url }}'
+    window.symbol_search_url = '{{ url('symbol-search') }}'
+    window.price_url = '{{ url('historical-price') }}'
   </script>
 {% endblock %}
