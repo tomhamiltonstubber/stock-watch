@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: django
+    versions:
+    - 3.1.4
+    - 3.1.5
+  - dependency-name: boto3
+    versions:
+    - 1.16.47
+    - 1.16.63
+  - dependency-name: sentry-sdk
+    versions:
+    - 0.19.5
+  - dependency-name: pytest
+    versions:
+    - 6.2.1
+  - dependency-name: django-debug-toolbar
+    versions:
+    - "3.2"
+  - dependency-name: django-extensions
+    versions:
+    - 3.1.0
